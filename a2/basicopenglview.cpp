@@ -23,6 +23,10 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
     _mouseButtonDown = false;
     srand(time(NULL));
 
+    this->_cam_azimuth = 30;
+    this->_cam_distance = 10;
+    this->_cam_elevation = 45;
+
 }
 
 // END OF PUBLIC METHODS
@@ -56,6 +60,7 @@ void BasicOpenGLView::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
+    calculateVpTransform();
     drawCube();
 }
 // ////////////////////////////////////////////
@@ -71,7 +76,7 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
     }
 
     _mouseButtonDown = false;
-    if(event->button() == Qt::LeftButton && _drawingPolygon)
+    if(event->button() == Qt::LeftButton)
     {
         //On Left Button, we translate through the space.
     }
@@ -91,6 +96,40 @@ void BasicOpenGLView::mouseMoveEvent(QMouseEvent *event)
 void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
 {
     //TODO: Implement Finalize Point Move
+}
+
+// ////////////////////////////////////
+// TRANSFORM BUILDERS/HELPERS
+// /////////////////////////////////////
+
+void BasicOpenGLView::calculateVpTransform()
+{
+
+    //Calculate the Camera Location, Gaze vector, etc.
+    QVector3D cam_pos = QVector3D((qreal)0, (qreal)1, (qreal)0);
+
+
+    //Todo: Calculate
+    QMatrix4x4 mo;
+    mo.setToIdentity();
+
+    //Calculate View
+    QMatrix4x4 mv;
+    mo.setToIdentity();
+
+    //Calculate Projection
+    QMatrix4x4 mp;
+    mp.setToIdentity();
+    mp.operator ()(3,3) = 0;
+    mp.operator ()(2,3) = -1 * this->_cam_far;
+    mp.operator ()(2,2) = (this->_cam_near + this->_cam_far) / this->_cam_near;
+    mp.operator ()(3,2) = (1.0f / this->_cam_near);
+
+    this->_vp_transform.setToIdentity();
+    this->_vp_transform = this->_vp_transform * mo;
+    this->_vp_transform = this->_vp_transform * mv;
+    this->_vp_transform = this->_vp_transform * mp;
+
 }
 
 // //////////////////////////////////
@@ -253,4 +292,34 @@ QMatrix3x3 BasicOpenGLView::invertMatrix(QMatrix3x3 matrix)
     result.operator ()(2,2) = (((matrix.operator ()(0,0) * matrix.operator ()(1,1)) - (matrix.operator ()(0,1) * matrix.operator ()(1,0))) / det);
 
     return result;
+}
+
+QVector3D BasicOpenGLView::RotateZ(QVector3D vec, double radians)
+{
+    double cosA = (double)cos(radians);
+    double sinA = (double)sin(radians);
+
+    QMatrix3x3 m;
+    m.operator ()(0,0) = cosA;
+    m.operator ()(0,1) = -sinA;
+    m.operator ()(1,0) = sinA;
+    m.operator ()(1,1) = cosA;
+    m.operator ()(2,2) = 1;
+
+    return this->pointTransform(vec, m);
+}
+
+QVector3D BasicOpenGLView::RotateY(QVector3D vec, double radians)
+{
+    double cosA = (double)cos(radians);
+    double sinA = (double)sin(radians);
+
+    QMatrix3x3 m;
+    m.operator ()(0,0) = cosA;
+    m.operator ()(0,2) = sinA;
+    m.operator ()(1,1) = 1;
+    m.operator ()(2,0) = -sinA;
+    m.operator ()(2,2) = cosA;
+
+    return this->pointTransform(vec, m);
 }

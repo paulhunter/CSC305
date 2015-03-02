@@ -26,6 +26,7 @@
 #include <QGenericMatrix>   //Generic Matrice Classes
 #include <QMatrix>          //Matrix support methods.
 #include <QMouseEvent>
+#include <QMatrix4x4>
 
 #define V_RADIUS 5 //Vertex radius
 
@@ -102,11 +103,19 @@ protected:
 private:
     //Mouse Controls + Polygon Modification
     bool _mouseButtonDown; //Mouse button pressed -> True
-    bool _drawingPolygon; //Currently drawing a polygon -> True
 
     //Scene Graph?
 
-    //Users Polygons
+    //Camera Info
+    double _cam_azimuth; //0-360 Degrees, measured from the X Axis
+    double _cam_elevation; //0-90 Degrees, measure from the XZ Plane
+    double _cam_distance; //Distance from the view point.
+    QMatrix4x4 _vp_transform; //The full transform of our view.
+    void calculateVpTransform();
+
+    double _cam_near = 1;
+    double _cam_far = 1000;
+
 
     // Helper Methods
     /** pointTransform
@@ -134,6 +143,13 @@ private:
 
     /** A helper method which translates UI mouse events to our absolute space. */
     QVector3D translateMouseToPoint(QMouseEvent *event);
+
+    /** A helper which allows a vector to be rotated around the Z axis in absolute space. **/
+    QVector3D RotateZ(QVector3D vec, double radians);
+
+    /** A helper which allows a vector to be rotated around the Z axis in absolte space. **/
+    QVector3D RotateY(QVector3D vec, double radians);
+
 };
 
 #endif // BASICOPENGLVIEW_H
