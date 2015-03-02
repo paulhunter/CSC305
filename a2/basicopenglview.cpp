@@ -21,25 +21,8 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
 {
     //Prep Polygon Creation and Storage Vars
     _mouseButtonDown = false;
-    _drawingPolygon = false;
     srand(time(NULL));
 
-    //Prep Transformations
-    _applyTransforms = true;
-    _transformStack = QStack<QMatrix3x3>();
-    cleanTransformStack();
-    _userPolygons = QVector< QVector<QVector3D> >();
-    _userPolygonColours = QVector<QVector<double> >();
-}
-
-bool BasicOpenGLView::Drawing()
-{
-    return _drawingPolygon;
-}
-
-QMatrix3x3 BasicOpenGLView::CurrentTransform()
-{
-    return _transformStack.top();
 }
 
 // END OF PUBLIC METHODS
@@ -58,10 +41,12 @@ void BasicOpenGLView::resizeGL(int width, int height)
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-(GLdouble)width/2.0,
-            (GLdouble)width/2.0,
-            -(GLdouble)height/2.0,
-            (GLdouble)height/2.0,
+    //As we did in class, we set our viewport with
+    //convention UI schemes, 0,0 at the top left.
+    glOrtho((GLdouble)0,
+            (GLdouble)width,
+            (GLdouble)0,
+            (GLdouble)height,
             -10.0, 10.0);
 
     glMatrixMode(GL_MODELVIEW);
@@ -71,7 +56,7 @@ void BasicOpenGLView::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    drawPolygons();
+    drawCube();
 }
 // ////////////////////////////////////////////
 // MOUSE EVENTS
@@ -86,18 +71,13 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
     }
 
     _mouseButtonDown = false;
-    QVector3D p = translateMouseToPoint(event);
-    p = translatePointToAbsoluteSpace(p);
-    p.setZ(1);
     if(event->button() == Qt::LeftButton && _drawingPolygon)
     {
-        //If a left button press and we are actively adding polygon, add it.
-        _userPolygons.last().append(p);
-        qDebug() << "Added Point to Polygon.";
+        //On Left Button, we translate through the space.
     }
     else if(event->button() == Qt::RightButton)
     {
-        //If a right button, select the point under the mouse.
+        //If a right button, we're modifying Azimuth and Elevation
 
     }
     update();
@@ -105,7 +85,7 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
 
 void BasicOpenGLView::mouseMoveEvent(QMouseEvent *event)
 {
-    //TODO: Implement Point Move
+    //TODO: Implement Point Move to update drawings.
 }
 
 void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
@@ -114,81 +94,19 @@ void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
 }
 
 // //////////////////////////////////
-// Transform Stack Methods
-// //////////////////////////////////
-QMatrix3x3 BasicOpenGLView::PushMatrix(QMatrix3x3 matrix)
-{
-    QMatrix3x3 result;
-    if(_transformStack.count() == 1)
-    {
-        result = _transformStack.top() * matrix;
-    }
-    else
-    {
-        result = _transformStack.pop() * matrix;
-    }
-    _transformStack.push(matrix);
-    _transformStack.push(result);
-    update();
-    return result;
-}
-
-QMatrix3x3 BasicOpenGLView::PopMatrix()
-{
-    QMatrix3x3 result, newTop;
-    if(_transformStack.count() == 1)
-    {
-        result.setToIdentity();
-    }
-    else
-    {
-        newTop = _transformStack.pop();
-        newTop = newTop * invertMatrix(_transformStack.top());
-        result = _transformStack.pop();
-        _transformStack.push(newTop);
-    }
-    update();
-    return result;
-}
-
-void BasicOpenGLView::ClearMatrixStack()
-{
-    cleanTransformStack();
-}
-
-// //////////////////////////////////
-// Stack and Polygon Helpers
-// //////////////////////////////////
-void BasicOpenGLView::prepareNewPolygon()
-{
-    /* To prepare for drawing a new polygon we have to create space for it within
-     * our list as well as randomly select a new color to assign to this polygon. */
-    _userPolygons.append( QVector<QVector3D>() ); //Our new polygon, added to the end of the list.
-    _userPolygonColours.append(QVector<double>(3));
-    _userPolygonColours.last()[0] = (double)(rand() / (RAND_MAX*1.0f));
-    _userPolygonColours.last()[1] = (double)(rand() / (RAND_MAX*1.0f));
-    _userPolygonColours.last()[2] = (double)(rand() / (RAND_MAX*1.0f));
-}
-
-void BasicOpenGLView::cleanTransformStack()
-{
-    _transformStack.clear();
-    QMatrix3x3 identity = QMatrix3x3();
-    identity.setToIdentity();
-    _transformStack.push(identity);
-    update();
-}
-
-// //////////////////////////////////
 // UI Drawing Helpers
 // //////////////////////////////////
 
-void BasicOpenGLView::drawPolygons()
+void BasicOpenGLView::drawCube()
 {
+    //This is the bare minimum, we brute force draw a cube
+    //in the scene. If time permits I wish to integrate
+    //scenegraphs.
+
     int x0, y0, x1, y1, i, j;
-    int polyCount = _userPolygonColours.size();
     QVector3D vsp; //visual space point
 
+    /* Polygon Drawing Code.
     for(i = 0; i < polyCount; i++)
     {
         if(_userPolygons.at(i).size() == 0)
@@ -234,6 +152,7 @@ void BasicOpenGLView::drawPolygons()
             drawVertex(x0, y0);
         }
     }
+    */
 }
 
 void BasicOpenGLView::drawLine(double x0, double y0, double x1, double y1)
@@ -268,66 +187,16 @@ void BasicOpenGLView::drawVertex(double x, double y)
 
 }
 
-// //////////////////////////////
-// Slots
-// ///////////////////////////////
-
-void BasicOpenGLView::toggleMatrixApplication(bool toggleValue)
-{
-    _applyTransforms = toggleValue;
-    update();
-}
-
-void BasicOpenGLView::togglePolygonDraw()
-{
-    if(_drawingPolygon)
-    {
-        qDebug() << "BOG: Closing Created Polygon";
-        //We are already drawing a polygon, so attempt to close it
-        if(_userPolygons.last().count() == 0)
-        {
-            //The user has opted to stop drawing a polygon before starting.
-            //We will remove the empty polygon we added to the list.
-            _userPolygons.remove(_userPolygons.count()-1);
-            _userPolygonColours.remove(_userPolygonColours.count()-1);
-        }
-        _drawingPolygon = false;
-    }
-    else
-    {
-        qDebug() << "BOG: Opening Canvas for Drawing";
-        //Start the drawing of a new polygon.
-        prepareNewPolygon();
-        _drawingPolygon = true;
-    }
-    update();
-}
-
-void BasicOpenGLView::clearAllPolygons()
-{
-    qDebug() << "BOG: Clearing Polygons";
-    _drawingPolygon = false;
-    _userPolygons.clear();
-    _userPolygonColours.clear();
-    update();
-}
-
-
 // /////////////////////////////////
 // Matrix and Transform Helpers
 // //////////////////////////////////
 QVector3D BasicOpenGLView::translatePointToAbsoluteSpace(QVector3D point)
 {
     QVector3D result = point;
-    //In order to scale appropriately we have to know whether or not
-    //we are applying view scaling or transformations in order to get back
-    //to our reference space.
-    if(_applyTransforms)
-    {
-        result = pointTransform(point, invertMatrix(_transformStack.top()));
-    }
-    //If we fall through each of the cases, and reach this point, we return
-    //the original point we were given.
+
+    //TODO? Likely not, we have no reason to know where in the space, the
+    //mouse clicked.
+
     result.setZ(1);
     return result;
 }
@@ -335,22 +204,19 @@ QVector3D BasicOpenGLView::translatePointToAbsoluteSpace(QVector3D point)
 QVector3D BasicOpenGLView::translatePointToVisualSpace(QVector3D point)
 {
     QVector3D result = point;
-    //Very similar to how we translate to absolute space, we apply the needed
-    //transforms to the absolute space point to get back to our visual space.
-    if(_applyTransforms)
-    {
-        result = pointTransform(point, _transformStack.top());
-    }
-    //If we fall through each of the cases, and reach this point, we return
-    //the original point we were given.
+
+    //TODO - Apply View matrix.
+
     result.setZ(1);
     return result;
 }
 
 QVector3D BasicOpenGLView::translateMouseToPoint(QMouseEvent *event)
 {
+
     //We use the same formula used to set the ortho from of the OpenGL.
-    QVector3D result = QVector3D( (event->x()-(this->width()/2)), ((-1*event->y())+(this->height()/2)), 1);
+    //Top left is 0,0.
+    QVector3D result = QVector3D( event->x(), event->y(), 1);
     qDebug() << "Mouse Click at " << result.x() << ", " << result.y() << ".";
     return result;
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'basicopenglview.h'
 **
-** Created: Mon Mar 2 11:32:28 2015
+** Created: Mon Mar 2 12:07:29 2015
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.4)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,39 +23,26 @@ static const uint qt_meta_data_BasicOpenGLView[] = {
        6,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       0,    0, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
        0,       // signalCount
 
- // slots: signature, parameters, type, tag, flags
-      29,   17,   16,   16, 0x0a,
-      59,   16,   16,   16, 0x0a,
-      79,   16,   16,   16, 0x0a,
-
        0        // eod
 };
 
 static const char qt_meta_stringdata_BasicOpenGLView[] = {
-    "BasicOpenGLView\0\0toggleValue\0"
-    "toggleMatrixApplication(bool)\0"
-    "togglePolygonDraw()\0clearAllPolygons()\0"
+    "BasicOpenGLView\0"
 };
 
 void BasicOpenGLView::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        Q_ASSERT(staticMetaObject.cast(_o));
-        BasicOpenGLView *_t = static_cast<BasicOpenGLView *>(_o);
-        switch (_id) {
-        case 0: _t->toggleMatrixApplication((*reinterpret_cast< bool(*)>(_a[1]))); break;
-        case 1: _t->togglePolygonDraw(); break;
-        case 2: _t->clearAllPolygons(); break;
-        default: ;
-        }
-    }
+    Q_UNUSED(_o);
+    Q_UNUSED(_id);
+    Q_UNUSED(_c);
+    Q_UNUSED(_a);
 }
 
 const QMetaObjectExtraData BasicOpenGLView::staticMetaObjectExtraData = {
@@ -89,11 +76,6 @@ int BasicOpenGLView::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     _id = QGLWidget::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
-    }
     return _id;
 }
 QT_END_MOC_NAMESPACE

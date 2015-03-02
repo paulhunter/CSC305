@@ -49,58 +49,10 @@ public:
       */
     explicit BasicOpenGLView(QWidget *parent = 0);
 
-    /**
-     * @brief Drawing Is the canvas in drawing mode?
-     * @return True if the canvas is actively in draw mode.
-     */
-    bool Drawing();
-
-    /**
-     * @brief CurrentTransform is the current multiplication of all
-     * matrices in the stack.
-     * @return The current complete transform.
-     */
-    QMatrix3x3 CurrentTransform();
-
-    /**
-     * @brief PushMatrix will push to provided matrix onto the work stack.
-     * @param matrix the transformation to add to the stack
-     * @return The current RESULT matrix.
-     */
-    QMatrix3x3 PushMatrix(QMatrix3x3 matrix);
-
-    /**
-     * @brief PopMatrix will pop the last matrix off the stack
-     * @return the last matrix pushed onto the stack.
-     */
-    QMatrix3x3 PopMatrix();
-
-    /**
-     * @brief ClearMatrixStack clear the stack of all transforms.
-     */
-    void ClearMatrixStack();
-
 signals:
 
 public slots:
-    /**
-     * @brief toggleMatrixApplication enables/disables the active application of
-     * the current matrix stack.
-     * @param toggleValue True - enable application, False - do not apply matrices.
-     */
-    void toggleMatrixApplication(bool toggleValue);
 
-    /**
-     * @brief togglePolygonDraw toggles the current state of polygon drawing.
-     * Use Drawing() to find out if the view is in draw mode.
-     */
-    void togglePolygonDraw();
-
-    /**
-     * @brief clearAllPolygons allows for all user added polygons to be removed from
-     * the scene
-     */
-    void clearAllPolygons();
 
 protected:
     /**
@@ -152,15 +104,9 @@ private:
     bool _mouseButtonDown; //Mouse button pressed -> True
     bool _drawingPolygon; //Currently drawing a polygon -> True
 
-    //Transform Options + Variables
-    bool _applyTransforms; //True -> Current visualization should show result of transform.
-    QStack<QMatrix3x3> _transformStack; //Work stack.
+    //Scene Graph?
 
     //Users Polygons
-    //We represent polygons as a list of 3d points, a QVector<QVector3d>
-    QVector< QVector<QVector3D> > _userPolygons;
-    //We store polygon colors as a 3D vector of RGB values.
-    QVector< QVector<double> > _userPolygonColours;
 
     // Helper Methods
     /** pointTransform
@@ -171,20 +117,14 @@ private:
      * QMatrix3x3 does not support inversion OotB, so we created a helper to do so. */
     QMatrix3x3 invertMatrix(QMatrix3x3 matrix);
 
-    /** prepareNewPolygon internal prepares the class to receive new points for a polygon. */
-    void prepareNewPolygon();
-
     /** A helper method that handles the drawing of all polygons in the OpenGL scene */
-    void drawPolygons();
+    void drawCube();
 
     /** a utility to draw a line between two points. */
     void drawLine(double x0, double y0, double x1, double y1);
 
     /** Draws a vertex at the point x,y in Visual Space*/
     void drawVertex(double x, double y);
-
-    /** A helper method which will return the transform stack to a single identity matrix. */
-    void cleanTransformStack();
 
     /** A helper method which allows us to translate a mouse click to a point in our view space. */
     QVector3D translatePointToAbsoluteSpace(QVector3D point);
