@@ -23,9 +23,9 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
     _mouseButtonDown = false;
     srand(time(NULL));
 
-    this->_cam_azimuth = 30;
+    this->_cam_azimuth = 0.523;
     this->_cam_distance = 10;
-    this->_cam_elevation = 45;
+    this->_cam_elevation = 0.785;
 
 }
 
@@ -104,9 +104,14 @@ void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
 
 void BasicOpenGLView::calculateVpTransform()
 {
-
     //Calculate the Camera Location, Gaze vector, etc.
-    QVector3D cam_pos = QVector3D((qreal)0, (qreal)1, (qreal)0);
+    QVector3D cam_pos = QVector3D((qreal)0, (qreal)_cam_distance, (qreal)0);
+    cam_pos = RotateZ(cam_pos, _cam_elevation);
+    cam_pos = RotateY(cam_pos, _cam_azimuth);
+
+    qDebug() << "Camera Position: (" << cam_pos.x() <<\
+                ", " << cam_pos.y() << ", " << cam_pos.z() << ")";
+
 
 
     //Todo: Calculate
