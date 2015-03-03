@@ -34,6 +34,7 @@
 #define MIN_CAM_AZI 0.0
 #define MAX_CAM_DIS 1000.0
 #define MIN_CAM_DIS 15.0
+#define CAM_FOV 1.57 //90 degrees.
 
 /**
   * @class  BasicOpenGLView

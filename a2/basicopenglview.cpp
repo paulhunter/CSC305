@@ -26,7 +26,7 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
     this->_cam_azimuth = 0.523;
     this->_cam_distance = 10;
     this->_cam_elevation = 0.785;
-    this->_cam_near = 1;
+    this->_cam_near = 10;
     this->_cam_far = 1000;
 
     this->_cam_radsPerPixelAzi = 0.0014;
@@ -104,7 +104,7 @@ void BasicOpenGLView::mouseMoveEvent(QMouseEvent *event)
     }
 
     QVector2D point = QVector2D(event->x(),event->y());
-    if(event->buttons() | Qt::RightButton)
+    if(event->buttons() & Qt::RightButton)
     {
         updateFromMouse(point, _cam_last_mouse);
         _cam_last_mouse = point;
@@ -175,6 +175,7 @@ void BasicOpenGLView::calculateVpTransform()
     QVector3D gaze_dir = -1 * cam_pos;
     gaze_dir.normalize();
     //TODO: Apply translation , AFTER getting gaze direction.
+    //<INSERT MISSING TRANSLATION CODE>
 
     //We can now calculate our coordinate reference frame
     //for our canonical view volume.
@@ -183,11 +184,42 @@ void BasicOpenGLView::calculateVpTransform()
     //do not need to normalize u as w and view_up are unit vectors.
     QVector3D v = this->crossProduct(w, u);
 
-    //TODO: Find boundaries of box. FOV?
-
     //Todo: Calculate
     QMatrix4x4 mo;
+    QMatrix4x4 temp;
+    temp.setToIdentity();
     mo.setToIdentity();
+    //along negative Z axis.
+    double n = -_cam_near;
+    double f = -_cam_far;
+    //Width is set to FOV, height is adjusted accordingly.
+    double l = tan(CAM_FOV/2.0)*n; //negative x axis.
+    double r = -l;
+    double t = r * (this->height()/(this->width()*1.0));
+    double b = -t;
+    double nx = this->width();
+    double ny = this->height();
+
+    temp.operator ()(0,0) = nx/2.0;
+    temp.operator ()(1,1) = ny/2.0;
+    temp.operator ()(0,3) = (nx-1)/2.0;
+    temp.operator ()(1,3) = (ny-1)/2.0;
+
+    mo = mo * temp;
+
+    temp.setToIdentity();
+    temp.operator ()(0,0) = 2.0/(r-l);
+    temp.operator ()(1,1) = 2.0/(t-b);
+    temp.operator ()(2,2) = 2.0/(n-f);
+
+    mo = mo * temp;
+
+    temp.setToIdentity();
+    temp.operator ()(0,3) = -(l+r)/2.0;
+    temp.operator ()(1,3) = -(b+t)/2.0;
+    temp.operator ()(2,3) = -(n+f)/2.0;
+
+    mo = mo * temp;
 
     //Calculate View through two matrices.
     QMatrix4x4 mv;
@@ -213,10 +245,10 @@ void BasicOpenGLView::calculateVpTransform()
     //Calculate Projection Transform
     QMatrix4x4 mp;
     mp.setToIdentity();
-    mp.operator ()(3,3) = 0;
+    mp.operator ()(3,3) = 0.0;
     mp.operator ()(2,3) = -1 * this->_cam_far;
     mp.operator ()(2,2) = (this->_cam_near + this->_cam_far) / this->_cam_near;
-    mp.operator ()(3,2) = (1.0f / this->_cam_near);
+    mp.operator ()(3,2) = (1.0 / this->_cam_near);
 
     this->_vp_transform.setToIdentity();
     this->_vp_transform = this->_vp_transform * mo;
