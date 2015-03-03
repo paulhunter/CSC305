@@ -26,6 +26,11 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
     this->_cam_azimuth = 0.523;
     this->_cam_distance = 10;
     this->_cam_elevation = 0.785;
+    this->_cam_near = 1;
+    this->_cam_far = 1000;
+
+    this->_cam_radsPerPixelAzi = 0.0014;
+    this->_cam_radsPerPixelElev = 0.0014;
 
 }
 
@@ -74,7 +79,7 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
         //If a button is already down, the additional button press means nothing
         return;
     }
-
+    QVector2D point = QVector2D(event->x(),event->y());
     _mouseButtonDown = false;
     if(event->button() == Qt::LeftButton)
     {
@@ -82,21 +87,68 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
     }
     else if(event->button() == Qt::RightButton)
     {
-        //If a right button, we're modifying Azimuth and Elevation
-
+        _mouseButtonDown = true;
+        _cam_aziC;
+        _cam_last_mouse = point;
+        //If a right button, we're modifying Azimuth and Elevation, so we
+        //track the point for movement.
     }
     update();
 }
 
 void BasicOpenGLView::mouseMoveEvent(QMouseEvent *event)
 {
-    //TODO: Implement Point Move to update drawings.
+    if(!_mouseButtonDown)
+    {
+        //Nothing to do.
+        return;
+    }
+
+    QVector2D point = QVector2D(event->x(),event->y());
+    if(event->buttons() | Qt::RightButton)
+    {
+        updateFromMouse(point, _cam_last_mouse);
+        _cam_last_mouse = point;
+    }
+    update();
 }
 
 void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
 {
-    //TODO: Implement Finalize Point Move
+    if(!_mouseButtonDown)
+    {
+        //nothing to do;
+    }
+
+    QVector2D point = QVector2D(event->x(), event->y());
+    if(event->button() == Qt::RightButton)
+    {
+        updateFromMouse(point, _cam_last_mouse);
+        _cam_last_mouse = point;
+        _mouseButtonDown = false;
+    }
 }
+
+void BasicOpenGLView::wheelEvent(QWheelEvent * event)
+{
+    //TIODO
+}
+
+// ////////////////////////////////////
+// CAMERA CONTROL HELPERS
+// ///////////////////////////////////
+
+void BasicOpenGLView::updateFromMouse(QVector2D neww, QVector2D prev)
+{
+    //Collect azimuth change.
+    _cam_azimuth += (neww.x() - prev.x()) * _cam_radsPerPixelAzi;
+    _cam_azimuth = std::min(MAX_CAM_AZI, std::max(MIN_CAM_AZI, _cam_azimuth));
+
+    //collect elevation change.
+    _cam_elevation += (neww.y() - prev.y()) * _cam_radsPerPixelElev;
+}
+
+
 
 // ////////////////////////////////////
 // TRANSFORM BUILDERS/HELPERS

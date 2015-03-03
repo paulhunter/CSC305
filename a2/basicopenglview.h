@@ -21,6 +21,7 @@
 #include <QGLWidget>
 #include <QtDebug>
 #include <QVector>          //Dynamic Array
+#include <QVector2D>
 #include <QVector3D>        //A 3 element structure
 #include <QStack>           //Stack implementation used for convenience
 #include <QGenericMatrix>   //Generic Matrice Classes
@@ -29,6 +30,8 @@
 #include <QMatrix4x4>
 
 #define V_RADIUS 5 //Vertex radius
+#define MAX_CAM_AZI 1.57
+#define MIN_CAM_AZI 0.0
 
 /**
   * @class  BasicOpenGLView
@@ -99,6 +102,10 @@ protected:
       */
     void mouseReleaseEvent(QMouseEvent *event);
 
+    /**
+      * function called when the wheel of the mouse is spun.
+      */
+    void wheelEvent(QWheelEvent * event);
 
 private:
     //Mouse Controls + Polygon Modification
@@ -107,14 +114,29 @@ private:
     //Scene Graph?
 
     //Camera Info
-    double _cam_azimuth; //0-360 Degrees, measured from the X Axis
+    double _cam_azimuth; //0 - 2*pi radians, measured from the X Axis
     double _cam_elevation; //0-90 Degrees, measure from the XZ Plane
     double _cam_distance; //Distance from the view point.
+    double _cam_near;
+    double _cam_far;
+
     QMatrix4x4 _vp_transform; //The full transform of our view.
     void calculateVpTransform();
 
-    double _cam_near = 1;
-    double _cam_far = 1000;
+    double _cam_radsPerPixelElev;
+    double _cam_radsPerPixelAzi;
+    QVector2D _cam_last_mouse;
+    bool _cam_aziC; //Changing in Azimuth
+    bool _cam_eleC; //Changing in Elevation
+
+    //A helper method used to update the rotation of the camera
+    //after a movement event from the mouse with appropriate key
+    //presses combined.
+    void updateFromMouse(QVector2D neww, QVector2D prev);
+
+
+
+
 
 
     // Helper Methods
