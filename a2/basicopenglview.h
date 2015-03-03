@@ -56,6 +56,8 @@ public:
       */
     explicit BasicOpenGLView(QWidget *parent = 0);
 
+    void SetCameraPosition(double azimuth, double elevation, double distance);
+
 signals:
 
 public slots:

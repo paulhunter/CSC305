@@ -26,3 +26,20 @@ MainWindow::~MainWindow()
 }
 
 
+// ///////////////////////////////////////
+// VIEW POINT BUTTON CLICK HANDLERS
+// ////////////////////////////////////////
+void MainWindow::on_pushButton_clicked()
+{
+    this->ui->oglwidget->SetCameraPosition(0.0, 1.57/3.0, 50.0);
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+     this->ui->oglwidget->SetCameraPosition(1.57/2.0, 1.57/2.0, 50.0);
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+     this->ui->oglwidget->SetCameraPosition(2.60, 1.57/5.0, 50.0);
+}

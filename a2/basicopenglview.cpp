@@ -143,6 +143,15 @@ void BasicOpenGLView::wheelEvent(QWheelEvent * event)
 // CAMERA CONTROL HELPERS
 // ///////////////////////////////////
 
+void BasicOpenGLView::SetCameraPosition(double azimuth, double elevation, double distance)
+{
+    _cam_azimuth = azimuth;
+    _cam_azimuth = std::min(MAX_CAM_AZI, std::max(MIN_CAM_AZI, _cam_azimuth));
+    _cam_elevation = elevation;
+    _cam_distance = distance;
+    _cam_distance = std::min(MAX_CAM_DIS, std::max(MIN_CAM_DIS, _cam_distance));
+}
+
 void BasicOpenGLView::updateFromMouse(QVector2D neww, QVector2D prev)
 {
     //calculate change and bound azimuth
@@ -249,14 +258,14 @@ void BasicOpenGLView::calculateVpTransform()
     cam_pos = RotateZ(cam_pos, _cam_elevation);
     cam_pos = RotateY(cam_pos, _cam_azimuth);
     //cam_pos is our 'e', location of the eye.
-    dDebug() << "cam_pos: (" << cam_pos.x() << ", " << cam_pos.y() << ", "
+    qDebug() << "cam_pos: (" << cam_pos.x() << ", " << cam_pos.y() << ", "
              << cam_pos.z() << ")";
 
     QVector3D view_up = QVector3D(0.0 ,1.0 ,0.0 );
     view_up = RotateZ(view_up, _cam_elevation);
     view_up = RotateY(view_up, _cam_azimuth);
 
-    dDebug() << "view_up: (" << view_up.x() << ", " << view_up.y() << ", "
+    qDebug() << "view_up: (" << view_up.x() << ", " << view_up.y() << ", "
              << view_up.z() << ")";
 
     QVector3D gaze_dir = -1 * cam_pos;
