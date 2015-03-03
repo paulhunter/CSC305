@@ -382,6 +382,39 @@ void BasicOpenGLView::drawCube()
     }
 }
 
+void BasicOpenGLView::drawAids()
+{
+    double ad = 100;
+    QVector4D x1, x2, y1, y2, z1, z2;
+    x1 = _vp_transform * QVector4D( ad,  0,   0, 1);
+    x2 = _vp_transform * QVector4D(-ad,  0,   0, 1);
+    y1 = _vp_transform * QVector4D(0,   ad,   0, 1);
+    y2 = _vp_transform * QVector4D(0,  -ad,   0, 1);
+    z1 = _vp_transform * QVector4D(0,    0,  ad, 1);
+    z2 = _vp_transform * QVector4D(0,    0, -ad, 1);
+
+    //Draw X axis.
+    glBegin(GL_LINES);
+    glColor3f(0.5, 0.2, 0.2);
+    glVertex3f(x1.x(), x1.y(), x1.z());
+    glVertex3f(x2.x(), x2.y(), x2.z());
+    glEnd();
+
+    //Draw Y axis.
+    glBegin(GL_LINES);
+    glColor3f(0.2, 0.2, 0.5);
+    glVertex3f(y1.x(), y1.y(), y1.z());
+    glVertex3f(y2.x(), y2.y(), y2.z());
+    glEnd();
+
+    //Draw Z axis.
+    glBegin(GL_LINES);
+    glColor3f(0.2, 0.5, 0.2);
+    glVertex3f(z1.x(), z1.y(), z1.z());
+    glVertex3f(z2.x(), z2.y(), z2.z());
+    glEnd();
+}
+
 void BasicOpenGLView::drawLine(double x0, double y0, double x1, double y1)
 {
     qDebug() << "Drawing line from " << x0 << "," << y0 << " to " << x1 << "," << y1;
@@ -389,29 +422,6 @@ void BasicOpenGLView::drawLine(double x0, double y0, double x1, double y1)
     glVertex2f(x0, y0);
     glVertex2f(x1, y1);
     glEnd();
-}
-
-void BasicOpenGLView::drawVertex(double x, double y)
-{
-    qDebug() << "Drawing Vertex at " << x << "," << y;
-    int i;
-    GLfloat circcoords[100][2];
-    //Create a circle around the point provided with the
-    //Vertex radius defined in the header file.
-    for(i = 0; i < 100; i++)
-    {
-        circcoords[i][0]= (GLfloat)(V_RADIUS * cos(i*2*M_PI/100.0) + x);
-        circcoords[i][1]= (GLfloat)(V_RADIUS * sin(i*2*M_PI/100.0) + y);
-    }
-
-    //Draw the point.
-    glBegin(GL_POLYGON);
-    for(i = 0; i < 100; i++)
-    {
-        glVertex2f(circcoords[i][0], circcoords[i][1]);
-    }
-    glEnd();
-
 }
 
 // /////////////////////////////////

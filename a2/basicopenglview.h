@@ -4,11 +4,15 @@
  * Created by: Brian Wyvill
  * Last Author: Paul Hunter
  *
- * CSC 305 - Assignment 1 - Homogeneous Coordinates and Matrices
+ * CSC 305 - Assignment 2 - Viewing 3D Objects.
  *
- * BasicOpenGLView is a QWidget that allows users to draw polygons
- * within an 2D OpenGL scene. Users can then apply transformations
- * by stacking them into a working transform.
+ * BasicOpenGLView is a QWidget that allows to interact
+ * with the camera using their mouse. Dollying is done with
+ * the mouse wheel, azimuth and elevation can be changed by
+ * first pressing the right mouse button and dragging.
+ * Horizontal movement will result in azimuth adjustments and
+ * Vertical movement will be translated to adjustments
+ * in the elevation of the camera.
  *
  */
 
@@ -30,10 +34,10 @@
 #include <QMatrix4x4>
 
 #define V_RADIUS 5 //Vertex radius
-#define MAX_CAM_AZI 1.57
-#define MIN_CAM_AZI 0.0
-#define MAX_CAM_DIS 800.0
-#define MIN_CAM_DIS 15.0
+#define MAX_CAM_AZI 1.57 //Just shy of full vertical.
+#define MIN_CAM_AZI 0.2  //Just off the ground.
+#define MAX_CAM_DIS 800.0 //Just a wee spec that cube is.
+#define MIN_CAM_DIS 15.0  //Close enough to allow clipping?
 #define CAM_FOV 1.57 //90 degrees.
 
 /**
@@ -56,12 +60,18 @@ public:
       */
     explicit BasicOpenGLView(QWidget *parent = 0);
 
+    /**
+     * @brief SetCameraPosition allows for manual positioning of the camera, useful
+     * for restoring viewpoints.
+     * @param azimuth in radians
+     * @param elevation in radians in range [0, 1.57].
+     * @param distance in radians in range [15, 800]
+     */
     void SetCameraPosition(double azimuth, double elevation, double distance);
 
 signals:
 
 public slots:
-
 
 protected:
     /**
@@ -116,26 +126,25 @@ private:
     //Mouse Controls + Polygon Modification
     bool _mouseButtonDown; //Mouse button pressed -> True
 
-    //Scene Graph?
     //Cube - A collection of twelve faces, of 12 colours.
     QVector< QVector<QVector4D> > _cube;
     QVector<QVector3D> _cube_panel_colors;
-    void initCube();
+    void initCube(); //Initialization for the triangles forming the cube.
 
     //Camera Info
-    double _cam_azimuth; //0 - 2*pi radians, measured from the X Axis
-    double _cam_elevation; //0-90 Degrees, measure from the XZ Plane
-    double _cam_distance; //Distance from the view point.
-    double _cam_near;
-    double _cam_far;
+    double _cam_azimuth; //Radians from X axis.
+    double _cam_elevation; //Radians above XZ plane in range [0, 1.57]
+    double _cam_distance;  //Distance from the view point.
+    double _cam_near; //Near view point of camera.
+    double _cam_far;  //Fair view point of camera.
 
-    QMatrix4x4 _vp_transform; //The full transform of our view.
-    void calculateVpTransform();
+    QMatrix4x4 _vp_transform; //The full transform of current view.
+    void calculateVpTransform(); //Recalculate the transformation matrix.
 
     double _cam_distancePerDelta; //Distance to adjust view with mouse wheel changes.
     double _cam_radsPerPixelElev; //Radians of adjustment per pixel of mouse movement.
-    double _cam_radsPerPixelAzi;
-    QVector2D _cam_last_mouse;
+    double _cam_radsPerPixelAzi;  //Radians of adjustment per pixel of mouse movement.
+    QVector2D _cam_last_mouse;    //Last point of mouse interaction.
 
     /** A helper method used to update the rotation of the camera
      *  after a movement event from the mouse with appropriate key
@@ -154,6 +163,9 @@ private:
 
     /** A helper method that handles the drawing of all polygons in the OpenGL scene */
     void drawCube();
+
+    /** A helper method to draw visual aids, including the axes and ground plane. */
+    void drawAids();
 
     /** a utility to draw a line between two points. */
     void drawLine(double x0, double y0, double x1, double y1);
