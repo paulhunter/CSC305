@@ -163,21 +163,54 @@ void BasicOpenGLView::calculateVpTransform()
     QVector3D cam_pos = QVector3D((qreal)0, (qreal)_cam_distance, (qreal)0);
     cam_pos = RotateZ(cam_pos, _cam_elevation);
     cam_pos = RotateY(cam_pos, _cam_azimuth);
+    //cam_pos is our 'e', location of the eye.
+
+    QVector3D view_up = QVector3D(0.0 ,1.0 ,0.0 );
+    view_up = RotateZ(view_up, _cam_elevation);
+    view_up = RotateY(view_up, _cam_azimuth);
 
     qDebug() << "Camera Position: (" << cam_pos.x() <<\
                 ", " << cam_pos.y() << ", " << cam_pos.z() << ")";
 
+    QVector3D gaze_dir = -1 * cam_pos;
+    gaze_dir.normalize();
+    //TODO: Apply translation , AFTER getting gaze direction.
 
+    //We can now calculate our coordinate reference frame
+    //for our canonical view volume.
+    QVector3D w = -1 * gaze_dir;
+    QVector3D u = this->crossProduct(view_up, w);
+    //do not need to normalize u as w and view_up are unit vectors.
+    QVector3D v = this->crossProduct(w, u);
+
+    //TODO: Find boundaries of box. FOV?
 
     //Todo: Calculate
     QMatrix4x4 mo;
     mo.setToIdentity();
 
-    //Calculate View
+    //Calculate View through two matrices.
     QMatrix4x4 mv;
-    mo.setToIdentity();
+    QMatrix4x4 mv_2;
+    mv.operator ()(0,0) = u.x();
+    mv.operator ()(0,0) = u.y();
+    mv.operator ()(0,0) = u.z();
+    mv.operator ()(1,0) = v.x();
+    mv.operator ()(1,1) = v.y();
+    mv.operator ()(1,2) = v.z();
+    mv.operator ()(2,0) = w.x();
+    mv.operator ()(2,1) = w.y();
+    mv.operator ()(2,2) = w.z();
+    mv.operator ()(3,3) = 1;
 
-    //Calculate Projection
+    mv_2.setToIdentity();
+    mv_2.operator ()(0,3) = -cam_pos.x();
+    mv_2.operator ()(1,3) = -cam_pos.y();
+    mv_2.operator ()(2,3) = -cam_pos.z();
+
+    mv = mv * mv_2;
+
+    //Calculate Projection Transform
     QMatrix4x4 mp;
     mp.setToIdentity();
     mp.operator ()(3,3) = 0;
@@ -189,7 +222,6 @@ void BasicOpenGLView::calculateVpTransform()
     this->_vp_transform = this->_vp_transform * mo;
     this->_vp_transform = this->_vp_transform * mv;
     this->_vp_transform = this->_vp_transform * mp;
-
 }
 
 // //////////////////////////////////
@@ -352,6 +384,16 @@ QMatrix3x3 BasicOpenGLView::invertMatrix(QMatrix3x3 matrix)
     result.operator ()(2,2) = (((matrix.operator ()(0,0) * matrix.operator ()(1,1)) - (matrix.operator ()(0,1) * matrix.operator ()(1,0))) / det);
 
     return result;
+}
+
+QVector3D BasicOpenGLView::crossProduct(QVector3D a, QVector3D b)
+{
+    //Cross product as per class notes. Could also have been done
+    //with a
+    return QVector3D(
+                (a.y()*b.z())-(a.z()*b.y()),
+                (a.z()*b.x())-(a.x()*b.z()),
+                (a.x()*b.y())-(a.y()*b.x()));
 }
 
 QVector3D BasicOpenGLView::RotateZ(QVector3D vec, double radians)

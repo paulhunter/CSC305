@@ -169,6 +169,9 @@ private:
     /** A helper method which translates UI mouse events to our absolute space. */
     QVector3D translateMouseToPoint(QMouseEvent *event);
 
+    /** A helper method to compute the cross product of two three dimension vectors. */
+    QVector3D crossProduct(QVector3D a, QVector3D b);
+
     /** A helper which allows a vector to be rotated around the Z axis in absolute space. **/
     QVector3D RotateZ(QVector3D vec, double radians);
 
