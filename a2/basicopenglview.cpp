@@ -151,7 +151,89 @@ void BasicOpenGLView::updateFromMouse(QVector2D neww, QVector2D prev)
     _cam_elevation += (neww.y() - prev.y()) * _cam_radsPerPixelElev;
 }
 
+// /////////////////////////////////////
+// SCENE OBJECT INITIALIZERS
+// /////////////////////////////////////
+void BasicOpenGLView::initCube()
+{
+    this->_cube = QVector< QVector<QVector3D> >();
+    this->_cube_panel_colors = QVector <QVector3D>();
+    QVector a, b, c, d, e, f, g, h; //The eight points of the cube.
+    double cs = 5; //length of half side.
+    a = QVector(cs,0,cs);
+    b = QVector(-cs, 0, cs);
+    c = QVector(-cs, 0, -cs);
+    d = QVector(csm, 0, -cs);
+    e = QVector(cs, cs*2 ,cs);
+    f = QVector(-cs, cs*2, cs);
+    g = QVector(-cs, cs*2, -cs);
+    h = QVector(csm, cs*2, -cs);
 
+    //Add our twelve triangles.
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(a);
+    _cube.last().append(b);
+    _cube.last().append(d);
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(b);
+    _cube.last().append(c);
+    _cube.last().append(d);
+
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(d);
+    _cube.last().append(e);
+    _cube.last().append(h);
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(d);
+    _cube.last().append(c);
+    _cube.last().append(h);
+
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(c);
+    _cube.last().append(b);
+    _cube.last().append(g);
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(g);
+    _cube.last().append(h);
+    _cube.last().append(c);
+
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(a);
+    _cube.last().append(b);
+    _cube.last().append(g);
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(a);
+    _cube.last().append(f);
+    _cube.last().append(g);
+
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(a);
+    _cube.last().append(d);
+    _cube.last().append(e);
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(a);
+    _cube.last().append(d);
+    _cube.last().append(f);
+
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(f);
+    _cube.last().append(g);
+    _cube.last().append(e);
+    _cube.append(QVector<QVector3d>());
+    _cube.last().append(e);
+    _cube.last().append(h);
+    _cube.last().append(g);
+
+    int x;
+    for(x = 0; x < 12; x++)
+    {
+        _cube_panel_colors.append(QVector3D());
+        _cube_panel_colors.last().setX(rand()/(RAND_MAX*1.0f));
+        _cube_panel_colors.last().setY(rand()/(RAND_MAX*1.0f));
+        _cube_panel_colors.last().setZ(rand()/(RAND_MAX*1.0f));
+    }
+
+}
 
 // ////////////////////////////////////
 // TRANSFORM BUILDERS/HELPERS

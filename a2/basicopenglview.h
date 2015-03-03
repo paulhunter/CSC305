@@ -115,6 +115,10 @@ private:
     bool _mouseButtonDown; //Mouse button pressed -> True
 
     //Scene Graph?
+    //Cube - A collection of twelve faces, of 12 colours.
+    QVector< QVector<QVector3D> > _cube;
+    QVector<QVector3D> _cube_panel_colors;
+    void initCube();
 
     //Camera Info
     double _cam_azimuth; //0 - 2*pi radians, measured from the X Axis
