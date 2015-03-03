@@ -31,6 +31,7 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
 
     this->_cam_radsPerPixelAzi = 0.0014;
     this->_cam_radsPerPixelElev = 0.0014;
+    this->_cam_distancePerDelta = 25;
 }
 
 // END OF PUBLIC METHODS
@@ -85,6 +86,7 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
     }
     else if(event->button() == Qt::RightButton)
     {
+        qDebug() << "RMB Down";
         _mouseButtonDown = true;
         _cam_last_mouse = point;
         //If a right button, we're modifying Azimuth and Elevation, so we
@@ -124,6 +126,7 @@ void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
         updateFromMouse(point, _cam_last_mouse);
         _cam_last_mouse = point;
         _mouseButtonDown = false;
+        qDebug() << "RMB Released";
     }
 }
 
@@ -145,9 +148,10 @@ void BasicOpenGLView::updateFromMouse(QVector2D neww, QVector2D prev)
     //calculate change and bound azimuth
     _cam_azimuth += (neww.x() - prev.x()) * _cam_radsPerPixelAzi;
     _cam_azimuth = std::min(MAX_CAM_AZI, std::max(MIN_CAM_AZI, _cam_azimuth));
-
+    qDebug() << "Camera Azimuth: " << _cam_azimuth;
     //calculate elevation change, no wrap needed?, trig functions will handle it.
     _cam_elevation += (neww.y() - prev.y()) * _cam_radsPerPixelElev;
+    qDebug() << "Camera Elevation: " << _cam_elevation;
 }
 
 // /////////////////////////////////////
@@ -245,13 +249,15 @@ void BasicOpenGLView::calculateVpTransform()
     cam_pos = RotateZ(cam_pos, _cam_elevation);
     cam_pos = RotateY(cam_pos, _cam_azimuth);
     //cam_pos is our 'e', location of the eye.
+    dDebug() << "cam_pos: (" << cam_pos.x() << ", " << cam_pos.y() << ", "
+             << cam_pos.z() << ")";
 
     QVector3D view_up = QVector3D(0.0 ,1.0 ,0.0 );
     view_up = RotateZ(view_up, _cam_elevation);
     view_up = RotateY(view_up, _cam_azimuth);
 
-    qDebug() << "Camera Position: (" << cam_pos.x() <<\
-                ", " << cam_pos.y() << ", " << cam_pos.z() << ")";
+    dDebug() << "view_up: (" << view_up.x() << ", " << view_up.y() << ", "
+             << view_up.z() << ")";
 
     QVector3D gaze_dir = -1 * cam_pos;
     gaze_dir.normalize();
@@ -470,7 +476,7 @@ QMatrix3x3 BasicOpenGLView::invertMatrix(QMatrix3x3 matrix)
 QVector3D BasicOpenGLView::crossProduct(QVector3D a, QVector3D b)
 {
     //Cross product as per class notes. Could also have been done
-    //with a
+    //with a Matrix.
     return QVector3D(
                 (a.y()*b.z())-(a.z()*b.y()),
                 (a.z()*b.x())-(a.x()*b.z()),
@@ -489,7 +495,11 @@ QVector3D BasicOpenGLView::RotateZ(QVector3D vec, double radians)
     m.operator ()(1,1) = cosA;
     m.operator ()(2,2) = 1;
 
-    return this->pointTransform(vec, m);
+    QVector3D r = pointTransform(vec, m);
+    qDebug() << "RotateZ: In: (" << vec.x() << ", " << vec.y()\
+             << ", " << vec.z() << "), angle: " << radians\
+             << " out: (" << r.x() << ", " << r.y() << ", " << r.z() << ")";
+    return r;
 }
 
 QVector3D BasicOpenGLView::RotateY(QVector3D vec, double radians)
@@ -504,5 +514,9 @@ QVector3D BasicOpenGLView::RotateY(QVector3D vec, double radians)
     m.operator ()(2,0) = -sinA;
     m.operator ()(2,2) = cosA;
 
-    return this->pointTransform(vec, m);
+    QVector3D r = this->pointTransform(vec, m);
+    qDebug() << "RotateY: In: (" << vec.x() << ", " << vec.y()\
+             << ", " << vec.z() << "), angle: " << radians\
+             << " out: (" << r.x() << ", " << r.y() << ", " << r.z() << ")";
+    return r;
 }
