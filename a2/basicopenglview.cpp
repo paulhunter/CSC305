@@ -360,9 +360,9 @@ void BasicOpenGLView::drawCube()
 
         glBegin(GL_TRIANGLES);
         glColor3f(color.x(), color.y(), color.z());
-        glVertex3f(a.w(), a.x(), a.y());
-        glVertex3f(b.w(), b.x(), b.y());
-        glVertex3f(c.w(), c.x(), c.y());
+        glVertex3f(a.x(), a.y(), a.z());
+        glVertex3f(b.x(), b.y(), b.z());
+        glVertex3f(c.x(), c.y(), c.z());
         glEnd();
     }
 }
