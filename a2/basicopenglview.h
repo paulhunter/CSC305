@@ -32,6 +32,8 @@
 #define V_RADIUS 5 //Vertex radius
 #define MAX_CAM_AZI 1.57
 #define MIN_CAM_AZI 0.0
+#define MAX_CAM_DIS 1000.0
+#define MIN_CAM_DIS 15.0
 
 /**
   * @class  BasicOpenGLView
@@ -123,6 +125,7 @@ private:
     QMatrix4x4 _vp_transform; //The full transform of our view.
     void calculateVpTransform();
 
+    double _cam_distancePerDelta; //Distance to adjust view with mouse wheel changes.
     double _cam_radsPerPixelElev;
     double _cam_radsPerPixelAzi;
     QVector2D _cam_last_mouse;

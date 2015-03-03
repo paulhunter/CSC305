@@ -80,7 +80,6 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
         return;
     }
     QVector2D point = QVector2D(event->x(),event->y());
-    _mouseButtonDown = false;
     if(event->button() == Qt::LeftButton)
     {
         //On Left Button, we translate through the space.
@@ -93,7 +92,7 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
         //If a right button, we're modifying Azimuth and Elevation, so we
         //track the point for movement.
     }
-    update();
+    update(); //We want to update regardless of button for 'click to refresh'
 }
 
 void BasicOpenGLView::mouseMoveEvent(QMouseEvent *event)
@@ -131,7 +130,11 @@ void BasicOpenGLView::mouseReleaseEvent(QMouseEvent *event)
 
 void BasicOpenGLView::wheelEvent(QWheelEvent * event)
 {
-    //TIODO
+    if(event->orientation() == Qt::Vertical){
+        _cam_distance += event->delta() * _cam_distancePerDelta;
+        _cam_distance = std::min(MAX_CAM_DIS, std::max(MIN_CAM_DIS, _cam_distance));
+        update();
+    }
 }
 
 // ////////////////////////////////////
