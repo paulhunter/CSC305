@@ -24,14 +24,13 @@ BasicOpenGLView::BasicOpenGLView(QWidget *parent) : QGLWidget(parent)
     srand(time(NULL));
 
     this->_cam_azimuth = 0.523;
-    this->_cam_distance = 10;
+    this->_cam_distance = 30;
     this->_cam_elevation = 0.785;
     this->_cam_near = 10;
     this->_cam_far = 1000;
 
     this->_cam_radsPerPixelAzi = 0.0014;
     this->_cam_radsPerPixelElev = 0.0014;
-
 }
 
 // END OF PUBLIC METHODS
@@ -87,7 +86,6 @@ void BasicOpenGLView::mousePressEvent(QMouseEvent *event)
     else if(event->button() == Qt::RightButton)
     {
         _mouseButtonDown = true;
-        _cam_aziC;
         _cam_last_mouse = point;
         //If a right button, we're modifying Azimuth and Elevation, so we
         //track the point for movement.
@@ -106,6 +104,7 @@ void BasicOpenGLView::mouseMoveEvent(QMouseEvent *event)
     QVector2D point = QVector2D(event->x(),event->y());
     if(event->buttons() & Qt::RightButton)
     {
+        //Update camera position azimuth and elevation.
         updateFromMouse(point, _cam_last_mouse);
         _cam_last_mouse = point;
     }
@@ -143,11 +142,11 @@ void BasicOpenGLView::wheelEvent(QWheelEvent * event)
 
 void BasicOpenGLView::updateFromMouse(QVector2D neww, QVector2D prev)
 {
-    //Collect azimuth change.
+    //calculate change and bound azimuth
     _cam_azimuth += (neww.x() - prev.x()) * _cam_radsPerPixelAzi;
     _cam_azimuth = std::min(MAX_CAM_AZI, std::max(MIN_CAM_AZI, _cam_azimuth));
 
-    //collect elevation change.
+    //calculate elevation change, no wrap needed?, trig functions will handle it.
     _cam_elevation += (neww.y() - prev.y()) * _cam_radsPerPixelElev;
 }
 
@@ -156,70 +155,70 @@ void BasicOpenGLView::updateFromMouse(QVector2D neww, QVector2D prev)
 // /////////////////////////////////////
 void BasicOpenGLView::initCube()
 {
-    this->_cube = QVector< QVector<QVector3D> >();
+    this->_cube = QVector< QVector<QVector4D> >();
     this->_cube_panel_colors = QVector <QVector3D>();
-    QVector a, b, c, d, e, f, g, h; //The eight points of the cube.
+    QVector4D a, b, c, d, e, f, g, h; //The eight points of the cube.
     double cs = 5; //length of half side.
-    a = QVector(cs,0,cs);
-    b = QVector(-cs, 0, cs);
-    c = QVector(-cs, 0, -cs);
-    d = QVector(csm, 0, -cs);
-    e = QVector(cs, cs*2 ,cs);
-    f = QVector(-cs, cs*2, cs);
-    g = QVector(-cs, cs*2, -cs);
-    h = QVector(csm, cs*2, -cs);
+    a = QVector4D( cs,    0,  cs, 1);
+    b = QVector4D(-cs,    0,  cs, 1);
+    c = QVector4D(-cs,    0, -cs, 1);
+    d = QVector4D( cs,    0, -cs, 1);
+    e = QVector4D( cs, cs*2,  cs, 1);
+    f = QVector4D(-cs, cs*2,  cs, 1);
+    g = QVector4D(-cs, cs*2, -cs, 1);
+    h = QVector4D( cs, cs*2, -cs, 1);
 
     //Add our twelve triangles.
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(a);
     _cube.last().append(b);
     _cube.last().append(d);
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(b);
     _cube.last().append(c);
     _cube.last().append(d);
 
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(d);
     _cube.last().append(e);
     _cube.last().append(h);
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(d);
     _cube.last().append(c);
     _cube.last().append(h);
 
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(c);
     _cube.last().append(b);
     _cube.last().append(g);
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(g);
     _cube.last().append(h);
     _cube.last().append(c);
 
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(a);
     _cube.last().append(b);
     _cube.last().append(g);
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(a);
     _cube.last().append(f);
     _cube.last().append(g);
 
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(a);
     _cube.last().append(d);
     _cube.last().append(e);
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(a);
     _cube.last().append(d);
     _cube.last().append(f);
 
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(f);
     _cube.last().append(g);
     _cube.last().append(e);
-    _cube.append(QVector<QVector3d>());
+    _cube.append(QVector<QVector4D>());
     _cube.last().append(e);
     _cube.last().append(h);
     _cube.last().append(g);
@@ -348,56 +347,24 @@ void BasicOpenGLView::drawCube()
     //in the scene. If time permits I wish to integrate
     //scenegraphs.
 
-    int x0, y0, x1, y1, i, j;
-    QVector3D vsp; //visual space point
-
-    /* Polygon Drawing Code.
-    for(i = 0; i < polyCount; i++)
+    //Draw CUBE
+    int tcount = _cube.count();
+    int x;
+    QVector4D a,b,c, color;
+    for(x = 0; x < tcount; x++)
     {
-        if(_userPolygons.at(i).size() == 0)
-            continue; //Skip any empty polygons that happened to get in here..
+        a = _vp_transform * _cube.at(x).at(0);
+        b = _vp_transform * _cube.at(x).at(1);
+        c = _vp_transform * _cube.at(x).at(2);
+        color = _cube_panel_colors.at(x);
 
-        //Set the draw color to that of the polygon
-        glColor3f(_userPolygonColours[i][0],_userPolygonColours[i][1],_userPolygonColours[i][2]);
-        //glColor3f(0.5f, 0.5f, 0.5f) - Debug Grey
-        vsp = translatePointToVisualSpace(_userPolygons.at(i).at(0));
-        if(_userPolygons.at(i).size() <= 1)
-        {
-            //The polygon has a single point.
-
-            drawVertex(vsp.x(), vsp.y());
-        }
-        else
-        {
-            //The polygon has two or more points.'
-            int vCount = _userPolygons.at(i).size();
-            x0 = vsp.x();
-            y0 = vsp.y();
-
-            for(j = 1; j < vCount; j++)
-            {
-                vsp = translatePointToVisualSpace(_userPolygons.at(i).at(j));
-                x1 = vsp.x();
-                y1 = vsp.y();
-                drawLine(x0, y0, x1, y1);
-                drawVertex(x0, y0);
-                x0 = x1;
-                y0 = y1;
-            }
-
-            if(vCount > 2)
-            {
-                //If the polygon has three or more points we want to close it over,
-                //drawing a line between the
-                vsp = translatePointToVisualSpace(_userPolygons.at(i).at(0));
-                drawLine(x0, y0, vsp.x(), vsp.y());
-                drawVertex(vsp.x(), vsp.y());
-            }
-            //In either case we need to draw the last vertex.
-            drawVertex(x0, y0);
-        }
+        glBegin(GL_TRIANGLES);
+        glColor3f(color.x(), color.y(), color.z());
+        glVertex3f(a.w(), a.x(), a.y());
+        glVertex3f(b.w(), b.x(), b.y());
+        glVertex3f(c.w(), c.x(), c.y());
+        glEnd();
     }
-    */
 }
 
 void BasicOpenGLView::drawLine(double x0, double y0, double x1, double y1)

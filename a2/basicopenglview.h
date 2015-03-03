@@ -32,7 +32,7 @@
 #define V_RADIUS 5 //Vertex radius
 #define MAX_CAM_AZI 1.57
 #define MIN_CAM_AZI 0.0
-#define MAX_CAM_DIS 1000.0
+#define MAX_CAM_DIS 800.0
 #define MIN_CAM_DIS 15.0
 #define CAM_FOV 1.57 //90 degrees.
 
@@ -116,7 +116,7 @@ private:
 
     //Scene Graph?
     //Cube - A collection of twelve faces, of 12 colours.
-    QVector< QVector<QVector3D> > _cube;
+    QVector< QVector<QVector4D> > _cube;
     QVector<QVector3D> _cube_panel_colors;
     void initCube();
 
@@ -131,21 +131,15 @@ private:
     void calculateVpTransform();
 
     double _cam_distancePerDelta; //Distance to adjust view with mouse wheel changes.
-    double _cam_radsPerPixelElev;
+    double _cam_radsPerPixelElev; //Radians of adjustment per pixel of mouse movement.
     double _cam_radsPerPixelAzi;
     QVector2D _cam_last_mouse;
-    bool _cam_aziC; //Changing in Azimuth
-    bool _cam_eleC; //Changing in Elevation
 
-    //A helper method used to update the rotation of the camera
-    //after a movement event from the mouse with appropriate key
-    //presses combined.
+    /** A helper method used to update the rotation of the camera
+     *  after a movement event from the mouse with appropriate key
+     *  presses combined.
+     */
     void updateFromMouse(QVector2D neww, QVector2D prev);
-
-
-
-
-
 
     // Helper Methods
     /** pointTransform
