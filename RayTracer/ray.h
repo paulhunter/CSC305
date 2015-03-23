@@ -45,6 +45,8 @@ public:
 	 */
 	QVector3D getPoint(double t);
 
+	QVector3D eyePos;
+	QVector3D gazeDirection;
 	/** origin of the ray */
 	QVector3D origin;
 	/* direction from origin of the array */
