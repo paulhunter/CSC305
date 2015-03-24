@@ -1,4 +1,5 @@
 #include "sphere.h"
+#include "QDebug"
 
 #define EPSILON 0.0001f
 
@@ -14,6 +15,9 @@ double Sphere::intersects(Ray ray, QMatrix4x4 transform)
 	QVector3D aPoint(0,1,0); //A point on the top of the sphere. 
 	origin = transform * origin;
 	aPoint = transform * aPoint;
+
+    //qDebug() << "Sphere: Origin (after transform): " << origin;
+    //qDebug() << "Sphere: aPoint (after transform): " << aPoint;
 
 	double radius = (aPoint - origin).length();
 	QVector3D pmc = ray.origin - origin;

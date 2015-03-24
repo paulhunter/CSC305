@@ -1,4 +1,5 @@
 #include "scenegraphnode.h"
+#include <QDebug>
 
 SceneGraphNode::SceneGraphNode(SceneObject *object, SceneObjectProperties *material)
 {
@@ -18,7 +19,26 @@ SceneObjectProperties* SceneGraphNode::getMaterial()
 
 bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, int *result)
 {
-    return true;
+    double r;
+    transform = localTransform * transform;
+    if(this->sceneObject != NULL)
+    {
+        r = this->sceneObject->intersects(ray, transform);
+        if(r > 1)
+        {
+            qDebug() << "Hit Sphere!";
+            return true;
+        }
+    }
+
+    for (std::vector<SceneGraphNode*>::iterator i = children.begin(); i != children.end(); i++)
+    {
+        if((*i)->castRay(ray, transform, result))
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 void SceneGraphNode::addChild(SceneGraphNode *child)
