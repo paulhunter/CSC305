@@ -10,7 +10,7 @@
 class
 {
 public:
-
+	SceneManager();
 
 	SceneGraphNode *root;
 	std::vector<LightSource> lights;

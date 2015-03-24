@@ -16,8 +16,8 @@ class RayTracer
 {
 public:
 	RayTracer();
-	QImage render(int width, int height, SceneManager *scene);
-
+	QImage render(int width, int height);
+	SceneManager *sceneManager;
 };
 
 #endif

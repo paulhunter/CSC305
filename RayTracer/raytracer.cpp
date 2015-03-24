@@ -3,6 +3,16 @@
 RayTracer::RayTracer()
 {
 	//Add scene creation.
+	this->sceneManager = new SceneManager();
+	SceneGraphNode root = new SceneGraphNode(NULL, NULL);
+	this->sceneManager->root = root;
+
+	SceneGraphNode *sphere = new SceneGraphNode(new Sphere(), new SceneObjectProperties());
+	sphere->localTransform.scale(2);
+	sphere->localTransform.translate(0, 0.5, 0);
+	root->addChild(sphere);
+
+	//TODO: Add lights. 
 }
 
 QImage RayTracer::render(int width, int height, SceneManager* scene)
@@ -42,9 +52,9 @@ QImage RayTracer::render(int width, int height, SceneManager* scene)
 		{
 			pixelColour(0,0,0);
 			ray.setToPerspectiveRay(focalLength, width, height, i, j);
-			if(scene->root.castRay(ray, &castResult, cameraTransform))
+			if(this->sceneManager->root.castRay(ray, &castResult, cameraTransform))
 			{
-				//Call shader to get pixel colour.
+				//TODO: Call shader to get pixel colour.
 				pixelColour += QVector3D(1.0, 0, 0); //Filler Colour
 			}
 			else
