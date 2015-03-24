@@ -26,7 +26,6 @@ bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, int *result)
         r = this->sceneObject->intersects(ray, transform);
         if(r > 1)
         {
-            qDebug() << "Hit Sphere!";
             return true;
         }
     }

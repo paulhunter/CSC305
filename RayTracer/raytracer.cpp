@@ -18,31 +18,10 @@ RayTracer::RayTracer()
 
 QImage RayTracer::render(int width, int height)
 {
-	//TODO: Incorporate Camera. 
-	QMatrix4x4 cameraTransform; //based on the ray created below for the tie being.
-    cameraTransform.setToIdentity();
-    /*
-	//u
-	cameraTransform.operator ()(0,0) = 0;
-    cameraTransform.operator ()(0,0) = 1;
-    cameraTransform.operator ()(0,0) = 0;
-    //v
-    cameraTransform.operator ()(1,0) = 1;
-    cameraTransform.operator ()(1,1) = 0;
-    cameraTransform.operator ()(1,2) = 0;
-    //w
-    cameraTransform.operator ()(2,0) = 0;
-    cameraTransform.operator ()(2,1) = 0;
-    cameraTransform.operator ()(2,2) = -1;
-    //translation
-    cameraTransform.operator ()(0,3) = -0;
-    cameraTransform.operator ()(1,3) = -0.5;
-    cameraTransform.operator ()(2,3) = -10;
-    cameraTransform.operator ()(3,3) = 1;
-    */
-
+    //TODO: Incorporate Camera Controls.
     Ray ray(QVector3D(0, 0.5, 100), QVector3D(0,0,-1));
-	
+
+    //TODO: Create RayImpact to be used to find which scene object is closest to the eye
     //RayImpact castResult = RayImpact();
     int castResult;
 	QVector3D pixelColour;
@@ -61,7 +40,7 @@ QImage RayTracer::render(int width, int height)
             ray.setToOrthographicRay(focalLength, width, height, i, j);
 
             //qDebug() << "Casting Ray: " << ray.origin << " in direction " << ray.direction;
-            if(this->sceneManager->root->castRay(ray, cameraTransform, &castResult))
+            if(this->sceneManager->root->castRay(ray, QMatrix4x4(), &castResult))
 			{
 				//TODO: Call shader to get pixel colour.
 				pixelColour += QVector3D(1.0, 0, 0); //Filler Colour
@@ -70,7 +49,7 @@ QImage RayTracer::render(int width, int height)
 			{
 				//We didn't hit anything in the scene! Use a background colour
 				//of harsh purple to indicate this.
-				pixelColour += QVector3D(1.0,0,1.0);
+                pixelColour += QVector3D(0.1,0.1,0.1);
 			}
             result.setPixel(i, height - j - 1,
 				qRgb(pixelColour.x() * 255, pixelColour.y() * 255, pixelColour.z() * 255));
