@@ -2,7 +2,8 @@
 
 SceneGraphNode::SceneGraphNode(SceneObject *object, SceneObjectProperties *material)
 {
-
+    this->sceneObject = object;
+    this->material = material;
 }
 
 SceneObject* SceneGraphNode::getSceneObject()
@@ -15,9 +16,9 @@ SceneObjectProperties* SceneGraphNode::getMaterial()
 	return this->material;
 }
 
-bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, RayImpact *result)
+bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, int *result)
 {
-	
+    return true;
 }
 
 void SceneGraphNode::addChild(SceneGraphNode *child)
@@ -31,7 +32,7 @@ void SceneGraphNode::addChild(SceneGraphNode *child)
 
 void SceneGraphNode::destroyChildren()
 {
-	for (std::vector<SceneGraphNode*>::iterator i = children.begin(); i != child.end())
+    for (std::vector<SceneGraphNode*>::iterator i = children.begin(); i != children.end(); i++)
 	{
 		(*i)->destroyChildren();
 		delete (*i);

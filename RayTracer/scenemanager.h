@@ -7,7 +7,11 @@
  #ifndef SCENEMANAGER_H
  #define SCENEMANAGER_H
 
-class
+#include <vector>
+#include <scenegraphnode.h>
+#include <lightsource.h>
+
+class SceneManager
 {
 public:
 	SceneManager();

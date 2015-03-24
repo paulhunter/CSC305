@@ -1,8 +1,8 @@
-#include "sceneobjectprop.h"
+#include "sceneobjectprops.h"
 
 SceneObjectProperties::SceneObjectProperties()
 {
-	color = QVector3D(0.7, 0.7, 0.7);
+    colour = QVector3D(0.7, 0.7, 0.7);
 	shine = 100;
 	specularCoef = QVector3D(0.5, 0.5, 0.5);
 	ambientColour = QVector3D(0.3,0.3,0.3);
@@ -13,7 +13,7 @@ SceneObjectProperties::SceneObjectProperties()
 SceneObjectProperties::SceneObjectProperties(
 		QVector3D colour, 
 		double shine,
-		QVector3D specularCoef
+        QVector3D specularCoef,
 		QVector3D ambientColour,
 		double refractiveIndex,
 		double mirror)

@@ -13,8 +13,22 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    sphere.cpp \
+    sceneobjectprops.cpp \
+    scenemanager.cpp \
+    scenegraphnode.cpp \
+    raytracer.cpp \
+    ray.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    sphere.h \
+    sceneobjectprops.h \
+    sceneobject.h \
+    scenemanager.h \
+    scenegraphnode.h \
+    raytracer.h \
+    ray.h \
+    lightsource.h
 
 FORMS    += mainwindow.ui

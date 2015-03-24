@@ -29,7 +29,7 @@ public:
 	std::vector<SceneGraphNode*> children;
 
 	/** cast a given ray providing its basis matrix, return intersection information */
-	bool castRay(Ray ray, QMatrix4x4 transform, RayImpact *result);
+    bool castRay(Ray ray, QMatrix4x4 transform, int *result);
 
 	/** Add a child to this node */
 	void addChild(SceneGraphNode *child);

@@ -10,8 +10,9 @@
  #include <QVector3D>
  #include <QMatrix4x4>
  #include <math.h>
- #include <ray.h>
- #include <sceneobject.h>
+ #include "sceneobject.h"
+ #include "ray.h"
+
 
 class Sphere : public SceneObject
 {

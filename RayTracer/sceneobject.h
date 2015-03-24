@@ -7,13 +7,14 @@
 #ifndef SCENEOBJECT_H
 #define SCENEOBJECT_H
 
+#include "ray.h"
+
 class SceneObject 
 {
 public: 
-	SceneObject();
-
-	virtual double intersects(Ray ray, QMatrix4x4 transform);
-	virtual QVector3D getNormal(Ray ray, QMatrix4x4 transform);
+    SceneObject() {}
+    virtual double intersects(Ray ray, QMatrix4x4 transform) = 0;
+    virtual QVector3D getNormal(QVector3D point, QMatrix4x4 transform) = 0;
 };
 
 

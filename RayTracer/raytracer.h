@@ -11,6 +11,7 @@
 
 #include <ray.h>
 #include <scenemanager.h>
+#include <QImage>
 
 class RayTracer
 {

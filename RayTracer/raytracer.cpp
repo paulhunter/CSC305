@@ -4,7 +4,7 @@ RayTracer::RayTracer()
 {
 	//Add scene creation.
 	this->sceneManager = new SceneManager();
-	SceneGraphNode root = new SceneGraphNode(NULL, NULL);
+    SceneGraphNode *root = new SceneGraphNode(NULL, NULL);
 	this->sceneManager->root = root;
 
 	SceneGraphNode *sphere = new SceneGraphNode(new Sphere(), new SceneObjectProperties());
@@ -15,7 +15,7 @@ RayTracer::RayTracer()
 	//TODO: Add lights. 
 }
 
-QImage RayTracer::render(int width, int height, SceneManager* scene)
+QImage RayTracer::render(int width, int height)
 {
 	//TODO: Incorporate Camera. 
 	QMatrix4x4 cameraTransform; //based on the ray created below for the tie being.
@@ -40,9 +40,10 @@ QImage RayTracer::render(int width, int height, SceneManager* scene)
 
 	Ray ray(QVector3D(0, 0.5, 10), QVector3D(0,0,-1));
 	
-	RayImpact castResult = RayImpact();
+    //RayImpact castResult = RayImpact();
+    int castResult;
 	QVector3D pixelColour;
-	QImage result(width, height, QImage::Format_RGB32);
+    QImage result = QImage(width, height, QImage::Format_RGB32);
 	
 	double focalLength = 1500.0;
 
@@ -50,9 +51,9 @@ QImage RayTracer::render(int width, int height, SceneManager* scene)
 	{
 		for(int j = 0; j < height; i++)
 		{
-			pixelColour(0,0,0);
+            pixelColour = QVector3D(0,0,0);
 			ray.setToPerspectiveRay(focalLength, width, height, i, j);
-			if(this->sceneManager->root.castRay(ray, &castResult, cameraTransform))
+            if(this->sceneManager->root->castRay(ray, cameraTransform, &castResult))
 			{
 				//TODO: Call shader to get pixel colour.
 				pixelColour += QVector3D(1.0, 0, 0); //Filler Colour

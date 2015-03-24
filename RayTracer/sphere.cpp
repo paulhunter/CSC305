@@ -1,5 +1,7 @@
 #include "sphere.h"
 
+#define EPSILON 0.0001f
+
 Sphere::Sphere()
 {
 
@@ -31,7 +33,6 @@ double Sphere::intersects(Ray ray, QMatrix4x4 transform)
 
 	double t1 = (-B + sq) / A;
 	double t2 = (-B - sq) / A;
-	double th; //The t value of the intersection. 
 	if(t1 <= t2)
 	{
 		return t1;
