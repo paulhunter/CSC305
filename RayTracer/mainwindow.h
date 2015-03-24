@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "raytracer.h"
+#include <QDebug>
 
 namespace Ui {
 class MainWindow;
