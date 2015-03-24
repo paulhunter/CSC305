@@ -22,11 +22,11 @@ public:
 	Sphere();
 	
 	/**
-	 * given a ray, find the intersection with the sphere.
-	 * Provide a transform to convert the sphere's model coordinates to the camera coordinate. 
-	 * Returns the point on the sphere if hit, otherwise, the origin of the ray. 
+	 * given a ray, find the t-value of the intersection with the sphere.
+	 * Returns the t value of the point on the sphere if hit, 
+	 * otherwise, the result will be <0;
 	 */
-	QVector3D intersects(Ray ray, QMatrix4x4 transform);
+	double intersects(Ray ray, QMatrix4x4 transform);
 	
 	/**
 	 * get the normal vector from a point on the shell of the sphere. 
