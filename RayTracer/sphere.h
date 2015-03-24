@@ -13,7 +13,7 @@
  #include <ray.h>
  #include <sceneobject.h>
 
-class Sphere
+class Sphere : public SceneObject
 {
 public:
 	/** 
