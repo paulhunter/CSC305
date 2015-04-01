@@ -2,7 +2,7 @@
 
 LightSource::LightSource()
 {
-	this->position = QVector3D(0,10,0);
+    this->position = QVector3D(-200,200,200);
 	this->intensity = 1.0;
 	this->ambientIntensity = 0.5;
 }

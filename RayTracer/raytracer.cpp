@@ -9,49 +9,53 @@ RayTracer::RayTracer()
 	this->sceneManager->root = root;
 
 	SceneGraphNode *sphere = new SceneGraphNode(new Sphere(), new SceneObjectProperties());
-    sphere->localTransform.scale(20);
-	sphere->localTransform.translate(0, 0.5, 0);
+    sphere->localTransform.scale(150);
+    //sphere->localTransform.translate(0, 0, 0);
 	root->addChild(sphere);
 
-	//TODO Allow multiple lights. 
-	LightSource * light = new LightSource();
-
+    this->activeShader = new LambertShader();
 }
 
 QImage RayTracer::render(int width, int height)
 {
     //TODO: Incorporate Camera Controls.
-    Ray ray(QVector3D(0, 0.5, 100), QVector3D(0,0,-1));
+    //Default Camera, out along the Z axis, 5meters of the ground, looking back at origin
+    Ray ray(QVector3D(0, 0, 800), QVector3D(0,0,-1).normalized());
 
-    //TODO: Create RayImpact to be used to find which scene object is closest to the eye
-    //RayImpact castResult = RayImpact();
-    int castResult;
+    //TODO Allow multiple lights.
+    LightSource * light = new LightSource();
+
+    CastResult* castresult = new CastResult();
 	QVector3D pixelColour;
     QImage result = QImage(width, height, QImage::Format_RGB32);
 	
-    double focalLength = 1;
+    double focalLength = 1; //Does not matter for the moment as we use Orthogonal rays.
 
 	for(int i = 0; i < width; i++)
 	{
         for(int j = 0; j < height; j++)
 		{
-            pixelColour = QVector3D(0,0,0);
-
+            pixelColour.setX(0);
+            pixelColour.setY(0);
+            pixelColour.setZ(0);
+            castresult->reset();
 
             //ray.setToPerspectiveRay(focalLength, width, height, i, j);
             ray.setToOrthographicRay(focalLength, width, height, i, j);
 
             //qDebug() << "Casting Ray: " << ray.origin << " in direction " << ray.direction;
-            if(this->sceneManager->root->castRay(ray, QMatrix4x4(), &castResult))
+            if(this->sceneManager->root->castRay(ray, QMatrix4x4(), castresult))
 			{
+                //qDebug() << "Ray: " << i << "," << j << " hit!";
 				//TODO: Call shader to get pixel colour.
-				pixelColour += QVector3D(1.0, 0, 0); //Filler Colour
+                pixelColour += this->activeShader->getPixelColour(castresult->surfacePoint,
+                    castresult->surfaceNormal, castresult->subject->getMaterial(), light) ;
 			}
 			else
 			{
 				//We didn't hit anything in the scene! Use a background colour
-				//of harsh purple to indicate this.
-                pixelColour += QVector3D(0.1,0.1,0.1);
+                //of dark grey to indicate this.
+                pixelColour += QVector3D(0.3,0.3,0.3);
 			}
             result.setPixel(i, height - j - 1,
 				qRgb(pixelColour.x() * 255, pixelColour.y() * 255, pixelColour.z() * 255));

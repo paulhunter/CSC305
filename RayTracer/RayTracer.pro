@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     ray.cpp \
     shader.cpp \
     lightsource.cpp \
-    lambertshader.cpp
+    lambertshader.cpp \
+    castresult.cpp
 
 HEADERS  += mainwindow.h \
     sphere.h \
@@ -34,6 +35,7 @@ HEADERS  += mainwindow.h \
     ray.h \
     lightsource.h \
     shader.h \
-    lambertshader.h
+    lambertshader.h \
+    castresult.h
 
 FORMS    += mainwindow.ui

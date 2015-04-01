@@ -17,27 +17,37 @@ SceneObjectProperties* SceneGraphNode::getMaterial()
 	return this->material;
 }
 
-bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, int *result)
+bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
 {
     double r;
     transform = localTransform * transform;
     if(this->sceneObject != NULL)
     {
         r = this->sceneObject->intersects(ray, transform);
-        if(r > 1)
+        if(r > 1 &&
+            (result->t < 0 || r < result->t))
         {
-            return true;
+            result->subject = this;
+            result->t = r;
+            result->surfacePoint = ray.origin + r*ray.direction;
+            result->surfaceNormal = this->sceneObject->getNormal(result->surfacePoint, transform);
         }
     }
 
+    //Query all children, who will in turn update the cast result as needed.
     for (std::vector<SceneGraphNode*>::iterator i = children.begin(); i != children.end(); i++)
     {
-        if((*i)->castRay(ray, transform, result))
-        {
-            return true;
-        }
+        (*i)->castRay(ray, transform, result);
     }
-    return false;
+
+    if(result->t >= 1)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void SceneGraphNode::addChild(SceneGraphNode *child)

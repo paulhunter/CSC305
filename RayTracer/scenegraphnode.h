@@ -12,6 +12,9 @@
 #include <sceneobject.h>
 #include <sceneobjectprops.h>
 #include <ray.h>
+#include <castresult.h>
+
+class CastResult;
 
 class SceneGraphNode
 {
@@ -28,8 +31,10 @@ public:
 
 	std::vector<SceneGraphNode*> children;
 
-	/** cast a given ray providing its basis matrix, return intersection information */
-    bool castRay(Ray ray, QMatrix4x4 transform, int *result);
+    /** cast a given ray providing its basis matrix, return true if intersections occurs,
+     *  in which case use the resulting CastResult information to determine shading, etc.
+     */
+    bool castRay(Ray ray, QMatrix4x4 transform, CastResult *result);
 
 	/** Add a child to this node */
 	void addChild(SceneGraphNode *child);
