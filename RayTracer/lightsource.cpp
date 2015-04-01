@@ -1,6 +1,6 @@
-#include "lightsouce.h"
+#include "lightsource.h"
 
-Lightsource::LightSource()
+LightSource::LightSource()
 {
 	this->position = QVector3D(0,10,0);
 	this->intensity = 1.0;

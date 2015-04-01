@@ -9,7 +9,8 @@
 #define SHADER_H
 
 #include <QVector3D>
-
+#include "sceneobjectprops.h"
+#include "lightsource.h"
 
 class Shader
 {

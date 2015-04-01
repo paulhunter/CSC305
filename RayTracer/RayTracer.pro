@@ -19,7 +19,10 @@ SOURCES += main.cpp\
     scenemanager.cpp \
     scenegraphnode.cpp \
     raytracer.cpp \
-    ray.cpp
+    ray.cpp \
+    shader.cpp \
+    lightsource.cpp \
+    lambertshader.cpp
 
 HEADERS  += mainwindow.h \
     sphere.h \
@@ -29,6 +32,8 @@ HEADERS  += mainwindow.h \
     scenegraphnode.h \
     raytracer.h \
     ray.h \
-    lightsource.h
+    lightsource.h \
+    shader.h \
+    lambertshader.h
 
 FORMS    += mainwindow.ui

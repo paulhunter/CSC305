@@ -17,3 +17,4 @@ QVector3D LambertShader::getPixelColour(QVector3D surfacePoint, QVector3D surfac
 	color.setZ(fmin(1, color.z()));
 
 	return color;
+}
