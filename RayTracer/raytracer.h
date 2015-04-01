@@ -9,6 +9,9 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
+#include <time.h>
+
+
 #include <ray.h>
 #include "shader.h"
 #include "lambertshader.h"

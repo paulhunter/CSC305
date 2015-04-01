@@ -17,13 +17,14 @@ RayTracer::RayTracer()
 
 QImage RayTracer::render(int width, int height)
 {
+    qDebug() << "RayTracer: Starting render of size " << width << "x" << height;
+    double start = std::clock();
     //TODO: Incorporate Camera Controls.
     //Default Camera, out along the Z axis, looking back at origin
     Ray ray(QVector3D(0, 0, 800), QVector3D(0,0,-1).normalized());
 
     //TODO Allow multiple lights.
     LightSource * light = new LightSource();
-
     CastResult* castresult = new CastResult();
 	QVector3D pixelColour;
     QImage result = QImage(width, height, QImage::Format_RGB32);
@@ -60,6 +61,7 @@ QImage RayTracer::render(int width, int height)
 				qRgb(pixelColour.x() * 255, pixelColour.y() * 255, pixelColour.z() * 255));
 		}
 	}
+    qDebug() << "RayTracer: Render completed in " << (std::clock() - start) / CLOCKS_PER_SEC << "seconds.";
 	return result;
 }
 

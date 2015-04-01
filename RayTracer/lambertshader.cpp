@@ -9,12 +9,15 @@ QVector3D LambertShader::getPixelColour(QVector3D surfacePoint, QVector3D surfac
 {
 	QVector3D color(0,0,0);
 	QVector3D lightRay = (light->position - surfacePoint).normalized();
-	color += material->colour * light->intensity * fmax(QVector3D::dotProduct(lightRay, surfaceNormal), 0);
+    color += (material->colour + (light->colour*light->ambientIntensity)) * light->intensity * fmax(QVector3D::dotProduct(lightRay, surfaceNormal), 0);
 
-	//Ensure the colour is not over saturated. 
+    //Ensure the colour is not over saturated.
+
 	color.setX(fmin(1, color.x()));
 	color.setY(fmin(1, color.y()));
 	color.setZ(fmin(1, color.z()));
+
+    //color.normalize();
 
 	return color;
 }
