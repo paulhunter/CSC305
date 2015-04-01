@@ -16,7 +16,7 @@ class Shader
 public:
 	Shader();
 
-	virtual QVector3D getPixelColour(QVector3D surfacePoint, QVector3D surfaceNormal, SceneObjectProperties* material, LightSource* light);
+	virtual QVector3D getPixelColour(QVector3D surfacePoint, QVector3D surfaceNormal, SceneObjectProperties* material, LightSource* light) = 0;
 };
 
 
