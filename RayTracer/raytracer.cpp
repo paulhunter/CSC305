@@ -10,7 +10,6 @@ RayTracer::RayTracer()
 
 	SceneGraphNode *sphere = new SceneGraphNode(new Sphere(), new SceneObjectProperties());
     sphere->localTransform.scale(150);
-    //sphere->localTransform.translate(0, 0, 0);
 	root->addChild(sphere);
 
     this->activeShader = new LambertShader();
@@ -19,7 +18,7 @@ RayTracer::RayTracer()
 QImage RayTracer::render(int width, int height)
 {
     //TODO: Incorporate Camera Controls.
-    //Default Camera, out along the Z axis, 5meters of the ground, looking back at origin
+    //Default Camera, out along the Z axis, looking back at origin
     Ray ray(QVector3D(0, 0, 800), QVector3D(0,0,-1).normalized());
 
     //TODO Allow multiple lights.
@@ -35,6 +34,7 @@ QImage RayTracer::render(int width, int height)
 	{
         for(int j = 0; j < height; j++)
 		{
+            //Reset our results for the next pixel.
             pixelColour.setX(0);
             pixelColour.setY(0);
             pixelColour.setZ(0);
@@ -43,11 +43,10 @@ QImage RayTracer::render(int width, int height)
             //ray.setToPerspectiveRay(focalLength, width, height, i, j);
             ray.setToOrthographicRay(focalLength, width, height, i, j);
 
-            //qDebug() << "Casting Ray: " << ray.origin << " in direction " << ray.direction;
             if(this->sceneManager->root->castRay(ray, QMatrix4x4(), castresult))
 			{
-                //qDebug() << "Ray: " << i << "," << j << " hit!";
-				//TODO: Call shader to get pixel colour.
+                //If we have hit something that is ahead of our vision plane, use
+                //the currently shader model to determine pixel colour.
                 pixelColour += this->activeShader->getPixelColour(castresult->surfacePoint,
                     castresult->surfaceNormal, castresult->subject->getMaterial(), light) ;
 			}

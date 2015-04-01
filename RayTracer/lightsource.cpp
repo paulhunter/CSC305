@@ -2,7 +2,8 @@
 
 LightSource::LightSource()
 {
-    this->position = QVector3D(-200,200,200);
+    //Default configuration, used for initial rayTracer setup.
+    this->position = QVector3D(-100,200,500);
 	this->intensity = 1.0;
 	this->ambientIntensity = 0.5;
 }
