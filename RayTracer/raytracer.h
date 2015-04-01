@@ -10,6 +10,11 @@
 #define RAYTRACER_H
 
 #include <ray.h>
+#include "shader.h"
+#include "lambertshader.h"
+
+#include "lightsource.h"
+
 #include <scenemanager.h>
 #include <QImage>
 
@@ -19,6 +24,8 @@ public:
 	RayTracer();
 	QImage render(int width, int height);
 	SceneManager *sceneManager;
+
+	Shader* activeShader;
 };
 
 #endif

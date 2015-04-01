@@ -13,7 +13,9 @@ RayTracer::RayTracer()
 	sphere->localTransform.translate(0, 0.5, 0);
 	root->addChild(sphere);
 
-	//TODO: Add lights. 
+	//TODO Allow multiple lights. 
+	LightSource * light = new LightSource();
+
 }
 
 QImage RayTracer::render(int width, int height)
