@@ -17,7 +17,7 @@
 #include "lambertshader.h"
 
 #include "lightsource.h"
-
+#include "utils.h"
 #include <scenemanager.h>
 #include <QImage>
 
@@ -29,6 +29,26 @@ public:
 	SceneManager *sceneManager;
 
 	Shader* activeShader;
+
+	/* Manually set the thread count of the render process. 
+	 * Caution, adding threads past the number of available logical
+	 * processors, which is often 8 on most systems these days, will
+	 * impeed speed, as additional overhead is added for each thread
+	 * waiting to get time on the clock. */
+	void setThreadCount(int n);
+
+private:
+	volatile int renderCores;
+
+	//A helper to indexing on a row column basis. 
+	void setPixel(uint x, uint y, char r, char g, char b, unsigned char* imageData);
+
+	int renderWidth, renderHeight;
+	volatile bool cancelRender;
+
+	//TEMPORARY
+	double cameraFocalLength;
+	LightSource* sceneLight;
 };
 
 #endif
