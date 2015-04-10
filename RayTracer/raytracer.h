@@ -11,6 +11,8 @@
 
 #include <time.h>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 #include <ray.h>
 #include "shader.h"
@@ -20,6 +22,11 @@
 #include "utils.h"
 #include <scenemanager.h>
 #include <QImage>
+
+#define FLAG_DIMENSIONS 0x0001
+#define FLAG_WORKER_COUNT 0x2000
+#define FLAG_RENDER_ENABLED 0x4000
+#define FLAG_EXIT 0x8000
 
 class RayTracer
 {
@@ -43,26 +50,40 @@ private:
 	//A helper to indexing on a row column basis. 
 	void setPixel(uint x, uint y, char r, char g, char b, unsigned char* imageData);
 
-	//Render Details
-	int renderWidth, renderHeight;
+	// ///////////////////////////
+	// Render Details
+	// ///////////////////////////
+	//Storage for configuration changes before application. 
+	volatile int renderWidth, renderHeight, renderThreadCount;
+
+	// Internals. 
+
+	//Dirty Flags are used to indicate changes in the settings of the render
+	//The flags are as follows
+	// 0x0001 - Dimension
+	// 0x0002 - 
+	// 0x4000 - Worker Count
+	// 0x8000 - Exit
+	volatile uint dirtyFlags;
+	volatile uint nextPixel;
+	std::vector<std::thread *> workers;
+	std::condition_variable workSema;
+	unsigned char* renderData;
+	QImage * image;
+
+	//
+	
+
 	uint renderBPL; //Bytes per line. 
 	volatile bool cancelRender;
-	volatile uint nextPixel;
-	unsigned char* renderData;
+
+	std::mutex renderMux;
 
 
 	//TEMPORARY
 	double cameraFocalLength;
 	LightSource* sceneLight;
 
-	struct renderWork_t {
-		uint x,
-		uint y, 
-		uint width, 
-		uint height, 
-		uint bpl, 
-		unsigned char* imageData
-	};
 };
 
 #endif

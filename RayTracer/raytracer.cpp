@@ -20,33 +20,101 @@ RayTracer::RayTracer()
     this->activeShader = new LambertShader();
 
     //Multi-Threading Infomation
-    cancelRender = false;
-    renderCores = getNumCores();
-    qDebug() << "RayTracer: System reporting " << renderCores << " cores online.";
+    //We will zero the flags, then use the setters to set appropriate values and
+    //the flag. This will ensure that on the first iteration, datastructures are
+    //initialized. 
+    this->dirtyFlags = 0x0000; 
+    this->setWorkerCount(getNumCores()); 
+    this->setRenderSize(width, height);
+    
+    qDebug() << "RayTracer: System reporting " << getNumCores() << " cores online.";
+    //TODO: Create master worker thread and wait it on a Semaphore.
 }
 
-void RayTracer::render_launch(int width, int height)
+void RayTracer::setRenderSize(int width, int height)
 {
-    //
     this->renderWidth = width;
     this->renderHeight = height;
-    this->nextPixel = 0;
-    unsigned char * image_data = new unsigned char[width * height * 4] //Using RGBA, we need to account for the alpha channel.
+    this->dirtyFlags |= 0x0001; //Dimensions Flag.
+}
 
+void RayTracer::setWorkerCount(int count)
+{
+    this->workerCount = count;
+    this->dirtyFlags |= 0x4000;
+}
 
-    //TODO: Find the number of logical processors in the system. 
-    int workerCount = 2;
-    std::vector<std::thread *> workers(workerCount);
-    std::thread * t;
+void RayTracer::render_reconfigure()
+{
+    /*
+     * Check that the active configuration of the render has not changed, if it has, update
+     * the needed structures
+     */
+     //TODO: Lock on something. 
+     if(this->dirtyFlags & FLAG_DIMENSIONS)
+     {
+        //Dimensions
+        delete this->renderData;
+        //Using RGBA, we need to account for the alpha channel.
+        this->renderData = new unsigned char[this->renderWidth * this->renderHeight * 4];
+        this->image(renderData, this->renderWidth, this->renderHeight,  QImage::Format_ARGB32_Premultiplied);
+     }
+     if(this->dirtyFlags & FLAG_WORKER_COUNT)
+     {
+        if(this->workers.size() < this->renderThreadCount)
+        {
+            int toInsert = this->renderThreadCount - this->workers.size();
+            for(int i - 0; i < toInsert; i++)
+            {
+                this->workers.push_back(new std::thread(&RayTracer::renderWorker, this));
+            }
+        }
+     }
+}
 
-    //Launch our workers. 
-    for (int i = 0; i < workerCount; i++)
+void RayTracer::render_master()
+{
+    //Local copies of system parameters to ensure that we don't run into issues. 
+    int width, height, workerCount;
+    std::thread *t; 
+    int i;
+
+    while(!this->dirtyFlags & FLAG_EXIT)
     {
-        workers.push_back(new std::thread(&RayTracer::renderWorker, this));
-    }
+        //Ensure we're up to date with our configuration. 
+        if(this->dirtyFlags)
+        {
+            /* reconfigure any needed data structures */
+            this->render_reconfigure();
+            width = this->renderWidth;
+            height = this->renderHeight;
+            workerCount = this->renderThreadCount;
+        }
 
-    //With the workers launched we just need to wait on them. If the render is cancelled, 
-    //each thread will terminate and this thread will finish. 
+        //Perform standard iteration resets;
+        this->nextPixel = 0;
+
+        //TODO: Ensure we are not in paused state.
+
+        //Everything is in order. Run an iteration. 
+        for(i = 0; i < workerCount; i++)
+        {
+            //TODO: Release semaphore token for each worker. 
+        }
+        //TODO: WAIT until all workers have started.
+        
+        //TODO: Wait for workers to finish/pause.
+
+        //TODO: Signal UI to repaint. 
+    }
+    
+    // If we have reached this point, we are heading to 
+    // termination, 
+    // Start Clean up 
+    // //////////////////////////////////////////
+
+    //Each of the workers is to exit when it completes a pixel and detects the flag set
+    //to quit the application. 
     for (int i = 0; i < workerCount; i++)
     {
         t = workers.pop_back();
@@ -54,7 +122,11 @@ void RayTracer::render_launch(int width, int height)
         delete t;
     }
 
-    //TODO: Create image.
+    //TODO: Send signal to repaint the image. I'm interested to see if there is any issue given
+    //      the operations of changing colours are mostly atomic. Some pixels perhaps will have
+    //      odd colours but will it be noticable at a high enough frame rate?
+    
+
 }
 
 
@@ -73,7 +145,7 @@ void RayTracer::render_worker()
     uint pix;
     //We want to run as a worker until either the cancel flag is set, or the image
     //has been entirely populated. 
-    while (!this->cancelRender)
+    while (!this->dirtyFlags & FLAG_EXIT)
     {
         pix = ++(this->nextPixel) //Maybe i'm over thinking how the volatile keyword works.
         pix -= 1;
