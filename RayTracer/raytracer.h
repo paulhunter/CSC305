@@ -45,29 +45,32 @@ public:
 	void setThreadCount(int n);
 
 private:
-	volatile int renderCores;
-
-	//A helper to indexing on a row column basis. 
-	void setPixel(uint x, uint y, char r, char g, char b, unsigned char* imageData);
 
 	// ///////////////////////////
 	// Render Details
 	// ///////////////////////////
 	//Storage for configuration changes before application. 
 	volatile int renderWidth, renderHeight, renderThreadCount;
-
+	std::mutex managedInterfaceLock;
 	// Internals. 
 
 	//Dirty Flags are used to indicate changes in the settings of the render
 	//The flags are as follows
 	// 0x0001 - Dimension
-	// 0x0002 - 
+	// 0x0002 - Camera Position
 	// 0x4000 - Worker Count
 	// 0x8000 - Exit
 	volatile uint dirtyFlags;
 	volatile uint nextPixel;
 	std::vector<std::thread *> workers;
+	volatile uint workTokens;
+	//Conditional Variables requires a Mutex to lock on. 
 	std::condition_variable workSema;
+	std::mutex workSemaMux;
+	
+
+	
+
 	unsigned char* renderData;
 	QImage * image;
 

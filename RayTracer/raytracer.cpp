@@ -25,7 +25,9 @@ RayTracer::RayTracer()
     //initialized. 
     this->dirtyFlags = 0x0000; 
     this->setWorkerCount(getNumCores()); 
-    this->setRenderSize(width, height);
+    this->setRenderSize(1, 1);
+
+    this->workTokens = 0;
     
     qDebug() << "RayTracer: System reporting " << getNumCores() << " cores online.";
     //TODO: Create master worker thread and wait it on a Semaphore.
@@ -33,15 +35,19 @@ RayTracer::RayTracer()
 
 void RayTracer::setRenderSize(int width, int height)
 {
+    this->managedInterfaceLock.lock();
     this->renderWidth = width;
     this->renderHeight = height;
     this->dirtyFlags |= 0x0001; //Dimensions Flag.
+    this->managedInterfaceLock.unlock();
 }
 
 void RayTracer::setWorkerCount(int count)
 {
+    this->managedInterfaceLock.lock();
     this->workerCount = count;
     this->dirtyFlags |= 0x4000;
+    this->managedInterfaceLock.unlock();
 }
 
 void RayTracer::render_reconfigure()
@@ -49,8 +55,12 @@ void RayTracer::render_reconfigure()
     /*
      * Check that the active configuration of the render has not changed, if it has, update
      * the needed structures
+     *
+     * The Render Master calls this method, and should lock on the managed interface lock
+     * before entering the method. Afterwards it should, as it currently done, sample the
+     * settings for their own mathematical calculations. 
      */
-     //TODO: Lock on something. 
+
      if(this->dirtyFlags & FLAG_DIMENSIONS)
      {
         //Dimensions
@@ -78,17 +88,24 @@ void RayTracer::render_master()
     int width, height, workerCount;
     std::thread *t; 
     int i;
+    
 
+    //RenderLoop
     while(!this->dirtyFlags & FLAG_EXIT)
     {
         //Ensure we're up to date with our configuration. 
         if(this->dirtyFlags)
         {
+            //Lock out any other threads which maybe doing setting of variables
+            this->managedInterfaceLock.lock();
             /* reconfigure any needed data structures */
             this->render_reconfigure();
             width = this->renderWidth;
             height = this->renderHeight;
             workerCount = this->renderThreadCount;
+
+            // Unlock to allow outside modification before the next iteration. 
+            this->managedInterfaceLock.unlock();
         }
 
         //Perform standard iteration resets;
@@ -97,15 +114,28 @@ void RayTracer::render_master()
         //TODO: Ensure we are not in paused state.
 
         //Everything is in order. Run an iteration. 
+        //Acquire a lock on the semaphore (conditional variable), and release it
+        //once for each worker. Afterwards we have to explicitly unlock otherwise
+        //none of the workers will begin working. 
+        std::unique_lock<std::mutex> worklk = worklk(this->workSemaMux);
+        this->workTokens = workerCount;
         for(i = 0; i < workerCount; i++)
         {
-            //TODO: Release semaphore token for each worker. 
+            this->workSema.notify_one();
         }
-        //TODO: WAIT until all workers have started.
-        
+        worklk.unlock();
+        //At this point, each otherkers has been placed in a ready state to try for
+        //the lock on the work mutex. They will each decriment the work token and
+        //release the lock themselves, carrying on to work.
+
+        //Now the master needs to wait to ensure all workers started
+        while(this->workTokens > 0); //Spin wait, we dont expect it to be long. 
+
         //TODO: Wait for workers to finish/pause.
 
-        //TODO: Signal UI to repaint. 
+        //TODO: Send signal to repaint the image. I'm interested to see if there is any issue given
+        //      the operations of changing colours are mostly atomic. Some pixels perhaps will have
+        //      odd colours but will it be noticable at a high enough frame rate?
     }
     
     // If we have reached this point, we are heading to 
@@ -122,10 +152,7 @@ void RayTracer::render_master()
         delete t;
     }
 
-    //TODO: Send signal to repaint the image. I'm interested to see if there is any issue given
-    //      the operations of changing colours are mostly atomic. Some pixels perhaps will have
-    //      odd colours but will it be noticable at a high enough frame rate?
-    
+   
 
 }
 
@@ -147,21 +174,32 @@ void RayTracer::render_worker()
     //has been entirely populated. 
     while (!this->dirtyFlags & FLAG_EXIT)
     {
-        pix = ++(this->nextPixel) //Maybe i'm over thinking how the volatile keyword works.
-        pix -= 1;
+        
+        //TODO: Wait for a work token
+        std::unique_lock<std::mutex> worklk = worklk(this->workSemaMux);
+        while(this->workToken <= 0) this->workSema.wait(worklk);
+        this->workToken--;
+        worklk.unlock()
 
-        if (pix >= this->renderHeight * this->renderWidth)
-            break;
+        while (this->nextPixel < this->renderHeight * this->renderWidth)
+        {    
+            pix = ++(this->nextPixel) //Maybe i'm over thinking how the volatile keyword works.
+            pix -= 1;
 
-        x = pix % this->renderWidth;
-        y = (int)(pix / this->renderWidth);
-        ptr = this->renderData + (this->renderBPL*y) + (x*4);
 
-        colour = getPixel(ray, cr, x+i, y+j);
-        *(p++) = max(0, min(colour.x() * 255, 255));
-        *(p++) = max(0, min(colour.y() * 255, 255));
-        *(p++) = max(0, min(colour.z() * 255, 255));
-        *(p++) = ~0;
+            x = pix % this->renderWidth;
+            y = (int)(pix / this->renderWidth);
+            ptr = this->renderData + (this->renderBPL*y) + (x*4);
+
+            colour = getPixel(ray, cr, x+i, y+j);
+            *(p++) = max(0, min(colour.x() * 255, 255));
+            *(p++) = max(0, min(colour.y() * 255, 255));
+            *(p++) = max(0, min(colour.z() * 255, 255));
+            *(p++) = ~0;
+        }
+
+        //TODO: Signal master of completion. 
+            //Decrement the worktokens by 1. 
     }
     //The work of the worker is done, it has completed its section of the image. 
     //The RayTracer will build an image from the data in the array provided to
