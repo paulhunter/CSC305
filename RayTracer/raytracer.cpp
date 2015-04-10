@@ -23,26 +23,38 @@ RayTracer::RayTracer()
     cancelRender = false;
     renderCores = getNumCores();
     qDebug() << "RayTracer: System reporting " << renderCores << " cores online.";
-
 }
 
-QImage RayTracer::render_launch(int width, int height)
+void RayTracer::render_launch(int width, int height)
 {
+    //
     this->renderWidth = width;
     this->renderHeight = height;
+    this->nextPixel = 0;
     unsigned char * image_data = new unsigned char[width * height * 4] //Using RGBA, we need to account for the alpha channel.
+
 
     //TODO: Find the number of logical processors in the system. 
     int workerCount = 2;
-    std::vector<std::thread *> workers;
+    std::vector<std::thread *> workers(workerCount);
+    std::thread * t;
 
-    //Divde the work using the suggested 
-
+    //Launch our workers. 
     for (int i = 0; i < workerCount; i++)
     {
-        workers.push_back(new std::thread)
+        workers.push_back(new std::thread(&RayTracer::renderWorker, this));
     }
 
+    //With the workers launched we just need to wait on them. If the render is cancelled, 
+    //each thread will terminate and this thread will finish. 
+    for (int i = 0; i < workerCount; i++)
+    {
+        t = workers.pop_back();
+        t->join();
+        delete t;
+    }
+
+    //TODO: Create image.
 }
 
 
