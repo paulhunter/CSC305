@@ -10,7 +10,7 @@
 #define RAYTRACER_H
 
 #include <time.h>
-
+#include <thread>
 
 #include <ray.h>
 #include "shader.h"
@@ -43,12 +43,26 @@ private:
 	//A helper to indexing on a row column basis. 
 	void setPixel(uint x, uint y, char r, char g, char b, unsigned char* imageData);
 
+	//Render Details
 	int renderWidth, renderHeight;
+	uint renderBPL; //Bytes per line. 
 	volatile bool cancelRender;
+	volatile uint nextPixel;
+	unsigned char* renderData;
+
 
 	//TEMPORARY
 	double cameraFocalLength;
 	LightSource* sceneLight;
+
+	struct renderWork_t {
+		uint x,
+		uint y, 
+		uint width, 
+		uint height, 
+		uint bpl, 
+		unsigned char* imageData
+	};
 };
 
 #endif

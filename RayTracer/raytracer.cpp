@@ -26,42 +26,58 @@ RayTracer::RayTracer()
 
 }
 
-void 
-
 QImage RayTracer::render_launch(int width, int height)
 {
     this->renderWidth = width;
     this->renderHeight = height;
     unsigned char * image_data = new unsigned char[width * height * 4] //Using RGBA, we need to account for the alpha channel.
 
+    //TODO: Find the number of logical processors in the system. 
+    int workerCount = 2;
+    std::vector<std::thread *> workers;
+
+    //Divde the work using the suggested 
+
+    for (int i = 0; i < workerCount; i++)
+    {
+        workers.push_back(new std::thread)
+    }
+
 }
 
 
-QImage RayTracer::render_worker(int x, int width, int y, int height, int bpl, unsigned char* imageData)
+void RayTracer::render_worker()
 {
     /*
-     * Each worker operates on a different portion of the image dta, so not thread safing 
-     * is required. 
+     * Each worker operates on a different portion of the image dta, so no thread control 
+     * mechanism to ensure mutual exclusion is needed.  
      */
     QVector3D colour;
     // TODO: CAMERA CONTROLS
     Ray* ray = new Ray(QVector3D(0,0,800), QVector3D(0,0,-1))
     CastResult cr = new CastResult()
     unsigned char* ptr;
-    int sol = x;
-    int i, j;
-    /* TODO: There are various improvements that cna be made ot the code below */
-    for (j = 0; j < height; j++, sol += bpl)
+    uint x, y;
+    uint pix;
+    //We want to run as a worker until either the cancel flag is set, or the image
+    //has been entirely populated. 
+    while (!this->cancelRender)
     {
-        ptr = imageData + sol;
-        for (i = 0; i < width; i++)
-        {
-            colour = getPixel(ray, cr, x+i, y+j);
-            *(p++) = max(0, min(colour.x() * 255, 255));
-            *(p++) = max(0, min(colour.y() * 255, 255));
-            *(p++) = max(0, min(colour.z() * 255, 255));
-            *(p++) = ~0;
-        }   
+        pix = ++(this->nextPixel) //Maybe i'm over thinking how the volatile keyword works.
+        pix -= 1;
+
+        if (pix >= this->renderHeight * this->renderWidth)
+            break;
+
+        x = pix % this->renderWidth;
+        y = (int)(pix / this->renderWidth);
+        ptr = this->renderData + (this->renderBPL*y) + (x*4);
+
+        colour = getPixel(ray, cr, x+i, y+j);
+        *(p++) = max(0, min(colour.x() * 255, 255));
+        *(p++) = max(0, min(colour.y() * 255, 255));
+        *(p++) = max(0, min(colour.z() * 255, 255));
+        *(p++) = ~0;
     }
     //The work of the worker is done, it has completed its section of the image. 
     //The RayTracer will build an image from the data in the array provided to
