@@ -1,7 +1,9 @@
 #include "sphere.h"
 #include "QDebug"
 
+#ifndef EPSILON
 #define EPSILON 0.0001f
+#endif
 
 Sphere::Sphere()
 {
