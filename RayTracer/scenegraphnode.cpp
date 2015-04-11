@@ -27,7 +27,8 @@ bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
         if(r > 1 &&
             (result->t < 0 || r < result->t))
         {
-            result->subject = this;
+            result->subject = this->sceneObject;
+            result->subjectProperties = this->material;
             result->t = r;
             result->surfacePoint = ray.origin + r*ray.direction;
             result->surfaceNormal = this->sceneObject->getNormal(result->surfacePoint, transform);

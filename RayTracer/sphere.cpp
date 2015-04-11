@@ -8,6 +8,7 @@ Sphere::Sphere()
 
 }
 
+/* SceneObject Method */
 double Sphere::intersects(Ray ray, QMatrix4x4 transform)
 {
 	//Default sphere is at 0,0,0 with radius 1.

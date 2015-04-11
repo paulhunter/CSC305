@@ -24,7 +24,9 @@ public:
     void reset();
 
     double t;
-    SceneGraphNode *subject;
+
+    SceneObject* subject;
+    SceneObjectProperties* subjectProperties;
     QVector3D surfacePoint;
     QVector3D surfaceNormal;
 };

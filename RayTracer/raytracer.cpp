@@ -14,7 +14,6 @@ RayTracer::RayTracer()
     Sphere *s = new Sphere(), 
     sphere->localTransform.scale(150);
     this->sceneManager->add_sceneObject(s, new SceneObjectProperties());
-    
 
     this->activeShader = new LambertShader();
 
@@ -241,7 +240,7 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
         //If we have hit something that is ahead of our vision plane, use
         //the currently shader model to determine pixel colour.
         result += this->activeShader->getPixelColour(cr->surfacePoint,
-           cr->surfaceNormal, cr->subject->getMaterial(), this->sceneLight) ;
+           cr->surfaceNormal, cr->subjectProperties, this->sceneLight) ;
     }
     else
     {

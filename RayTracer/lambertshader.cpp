@@ -5,9 +5,13 @@ LambertShader::LambertShader()
 
 }
 
-QVector3D LambertShader::getPixelColour(QVector3D surfacePoint, QVector3D surfaceNormal, SceneObjectProperties* material, LightSource* light)
+QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* sceneMan)
 {
 	QVector3D color(0,0,0);
+	cast->surfacePoint;
+	cast->surfaceNormal;
+	cast->subject->getMaterial();
+	
 	QVector3D lightRay = (light->position - surfacePoint).normalized();
     color += material->colour * light->intensity * fmax(QVector3D::dotProduct(lightRay, surfaceNormal), 0);
 
