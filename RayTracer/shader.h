@@ -11,13 +11,14 @@
 #include <QVector3D>
 #include "sceneobjectprops.h"
 #include "lightsource.h"
+#include "ray.h"
 
 class Shader
 {
 public:
 	Shader();
 
-	virtual QVector3D getPixelColour(CastResult* cast, SceneManager* sceneMan) = 0;
+	virtual QVector3D getPixelColour(CastResult* cast, SceneManager* scene) = 0;
 
 	/* Given a rays cast to a point, find the amount of ambient light on the 
 	 * surface.
