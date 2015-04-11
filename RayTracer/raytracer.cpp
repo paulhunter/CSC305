@@ -10,12 +10,11 @@ RayTracer::RayTracer()
 {
 	//Add scene creation.
 	this->sceneManager = new SceneManager();
-    SceneGraphNode *root = new SceneGraphNode(NULL, NULL);
-	this->sceneManager->root = root;
 
-	SceneGraphNode *sphere = new SceneGraphNode(new Sphere(), new SceneObjectProperties());
+    Sphere *s = new Sphere(), 
     sphere->localTransform.scale(150);
-	root->addChild(sphere);
+    this->sceneManager->add_sceneObject(s, new SceneObjectProperties());
+    
 
     this->activeShader = new LambertShader();
 
@@ -237,7 +236,7 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
     QVector3D result;
     //ray.setToPerspectiveRay(focalLength, renderWidth, renderHeight, x, y);
     ray.setToOrthographicRay(cameraFocalLength, renderWidth, renderHeight, x, y);
-    if(this->sceneManager->root->castRay(ray, QMatrix4x4(), cr))
+    if(this->sceneManager->castRay(ray, cr))
     {
         //If we have hit something that is ahead of our vision plane, use
         //the currently shader model to determine pixel colour.
