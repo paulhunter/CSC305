@@ -1,10 +1,25 @@
 #include "ray.h"
 
+Ray::Ray()
+{
+
+}
+
+void Ray::set(QVector3D origin, QVector3D direction)
+{
+	//Default the ray to the eye and direction in case
+	//it is being used for shadow calculations. 
+	this->origin = origin;
+	this->direction = direction.normalized();
+}
+
+
+
 Ray::Ray(QVector3D eyePos, QVector3D direction)
 {
 	this->eyePos = eyePos;
-	this->gazeDirection = direction;
-	//Grab the Y-axis as the up vector.
+	this->gazeDirection = direction.normalized();
+
 	QVector3D up = QVector3D(0,1,0);
 
 	this->w = (-gazeDirection).normalized();
@@ -30,6 +45,8 @@ void Ray::setToPerspectiveRay(double focalLength, double screenWidth, double scr
 	this->origin = this->eyePos;
 	this->direction = (focalLength * -w) + (midu * u) + (midv * v);
 }
+
+
 
 QVector3D Ray::getPoint(double t)
 {

@@ -13,8 +13,20 @@
 class Ray
 {
 public:
+	/** Slim-Constructor
+	 * Used for shadows. No pre-calculation for axes, use set(...) to
+	 * set the origin and direction, you need not normalize direction before hand. 
+	 */
+	Ray();
+
+	/** set
+	 * Allows the setting of the origin and direction of the ray manually
+	 */
+	void set(QVector3D origin, QVector3D direction);
+
 	/** Constructor
-	 * Construct the ray base assuming a Y-axis up vector. 
+	 * Construct the ray base assuming a Y-axis up vector. Use this for calculating
+	 * rays for the camera. 
 	 */
 	Ray(QVector3D eyePos, QVector3D direction);
 
