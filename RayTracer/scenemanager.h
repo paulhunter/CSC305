@@ -34,11 +34,16 @@ public:
 
 	/* Lights */
 	/* Add a new light source to the scene. It should be pre-
-	 * constructed as it should be used. 
+	 * constructed as it should be used. Defsult intensity settings
+	 * are applied.
+	 *
 	 * The scene manager will ensure the destruction of the light
 	 * object after use */
-	void add_lightSource(LightSource* light);
+	void add_lightSource(SceneObject* obj, ObjectMaterial* material);
 
+	/* Add a new light with a specified intensity. */
+	void add_lightSource(SceneObject* obj, ObjectMaterial* material,
+		double intensity, double ambientIntensity);
 
 	/* Utilities */
 	/* Cast a ray into the scene, returning the results of the
@@ -49,7 +54,7 @@ public:
 
 	std::vector<LightSource*> lights;
 private:
-	/* 
+	
 	SceneGraphNode *root;
 	
 
