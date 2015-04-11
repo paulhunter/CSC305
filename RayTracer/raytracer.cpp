@@ -204,7 +204,7 @@ void RayTracer::render_worker()
             y = (int)(pix / this->_width);
             ptr = this->renderData + (this->renderBPL*y) + (x*4);
 
-            colour = getPixel(ray, cr, x+i, y+j);
+            colour = getPixel(ray, cr, x, y);
             *(p++) = max(0, min(colour.x() * 255, 255));
             *(p++) = max(0, min(colour.y() * 255, 255));
             *(p++) = max(0, min(colour.z() * 255, 255));
