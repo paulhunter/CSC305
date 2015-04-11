@@ -1,0 +1,36 @@
+
+RayTracer Project
+Paul Hunter, V00728328
+
+University of Victoria
+CSC 305 - Introduction to Computer Graphics
+2015-APR-13
+
+
+This Qt Project implements a Ray Tracing rendering engine which is paired
+with a GUI application to allow live rendering and experiementation with 
+render techniques such as shaders or anti-aliasing. The application is
+intended to be a learning tool to help those interested in understanding
+how the different techniques affect the render results; in addition, the
+source code of the project can also be used as a teaching tool, as an 
+example implementation of many of common structures we see in graphics 
+today. 
+ 
+The project was created as partfil fulfillment of the course requirements
+of CSC 305 at the University of Victoria under the instruction of Brian
+Wyvill. 
+
+Features:
+---------
+
+User Interaction
+- users of the application are able to change the following settings through
+  the GUI which will directly affect the next render interation:
+  	- Number of thread workers for the operation
+  	- Resolution of the rendered image
+
+
+System Architecture and Design
+- The ray tracing render process is multi-threaded
+
+
