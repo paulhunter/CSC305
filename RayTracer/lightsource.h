@@ -20,7 +20,9 @@ public:
     /* Perhaps later add this back wrapping a simple sphere/point source */
     //LightSource(QVector3D colour, QVector3D position, double intensity, double ambientIntensity);
 
-	QVector3D getLightDirection(QVector3D destination);
+	/* Calculate the unit vector of the ray from the surface point to
+	 * the light source */
+	QVector3D getLightVector(QVector3D surfacePoint);
 
 	double intensity;
 	double ambientIntensity;
