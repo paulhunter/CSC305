@@ -46,7 +46,7 @@ void RayTracer::setWorkerCount(int count)
 {
     this->managedInterfaceLock.lock();
     this->workerCount = count;
-    this->dirtyFlags |= 0x4000;
+    this->dirtyFlags |= 0x4000; //Thread count adjustment
     this->managedInterfaceLock.unlock();
 }
 
@@ -69,6 +69,7 @@ void RayTracer::render_reconfigure()
         this->renderData = new unsigned char[this->renderWidth * this->renderHeight * 4];
         this->image(renderData, this->renderWidth, this->renderHeight,  QImage::Format_ARGB32_Premultiplied);
      }
+
      if(this->dirtyFlags & FLAG_WORKER_COUNT)
      {
         if(this->workers.size() < this->renderThreadCount)
@@ -84,12 +85,16 @@ void RayTracer::render_reconfigure()
 
 void RayTracer::render_master()
 {
+    /* Render Master Thread Work
+     * 
+     * The Render Master thread is responsible for coordinating the workers in 
+     * the rendering of a single frame. This is done using a counter for the number 
+     * of work tokens which are distributed to and returned by the workers by 
+     * the master. 
+     */
     //Local copies of system parameters to ensure that we don't run into issues. 
-    int width, height, workerCount;
-    std::thread *t; 
     int i;
     
-
     //RenderLoop
     while(!this->dirtyFlags & FLAG_EXIT)
     {
@@ -100,9 +105,10 @@ void RayTracer::render_master()
             this->managedInterfaceLock.lock();
             /* reconfigure any needed data structures */
             this->render_reconfigure();
-            width = this->renderWidth;
-            height = this->renderHeight;
-            workerCount = this->renderThreadCount;
+            this->_width = this->renderWidth;
+            this->_height = this->renderHeight;
+            this->renderBPL = this->renderWidth * this->renderHeight * 4;
+            this->_workerCount = this->renderThreadCount;
 
             // Unlock to allow outside modification before the next iteration. 
             this->managedInterfaceLock.unlock();
@@ -114,24 +120,36 @@ void RayTracer::render_master()
         //TODO: Ensure we are not in paused state.
 
         //Everything is in order. Run an iteration. 
-        //Acquire a lock on the semaphore (conditional variable), and release it
-        //once for each worker. Afterwards we have to explicitly unlock otherwise
-        //none of the workers will begin working. 
-        std::unique_lock<std::mutex> worklk = worklk(this->workSemaMux);
-        this->workTokens = workerCount;
-        for(i = 0; i < workerCount; i++)
-        {
-            this->workSema.notify_one();
-        }
+
+        //Distribute a number of tokens for workers.
+        std::unique_lock<std::mutex> worklk(this->workSemaMux);
+        this->workTokens = workerCount; 
+
+        //We could notify each thread individiually, but only workerCount of them
+        //can be awoken as that is the allocated number of takens, so we can awaken
+        //all of them and let them fight for a token.
+        this->workSema.notify_all();
         worklk.unlock();
+
         //At this point, each otherkers has been placed in a ready state to try for
-        //the lock on the work mutex. They will each decriment the work token and
-        //release the lock themselves, carrying on to work.
+        //the lock on the work mutex. As they wake and each will decriment the work 
+        //tokens and release the lock themselves, carrying on to work. When they finish
+        //the image they will each decremenet a second time. 
 
         //Now the master needs to wait to ensure all workers started
         while(this->workTokens > 0); //Spin wait, we dont expect it to be long. 
+            //DEBUG: Can print to indicate number of workers started as expected.
 
-        //TODO: Wait for workers to finish/pause.
+        //Wait for each of the workers to finish. When they do each of them will
+        //decrement the work tokens counter another time, so when all workers
+        //finished  
+        worklk.lock();
+        while(this->workTokens > -this->workerCount) this->workSema.wait(lk);
+        this->workTokens = 0;
+        worklk.unlock(); //The lock would go out of scope and unlock at the end of the iteration
+                         //but i dont think we need to hang on to it past this point.
+
+        
 
         //TODO: Send signal to repaint the image. I'm interested to see if there is any issue given
         //      the operations of changing colours are mostly atomic. Some pixels perhaps will have
@@ -145,17 +163,13 @@ void RayTracer::render_master()
 
     //Each of the workers is to exit when it completes a pixel and detects the flag set
     //to quit the application. 
-    for (int i = 0; i < workerCount; i++)
+    for (int i = 0; i < this->_workerCount; i++)
     {
-        t = workers.pop_back();
+        t = this->workers.pop_back();
         t->join();
         delete t;
     }
-
-   
-
 }
-
 
 void RayTracer::render_worker()
 {
@@ -174,21 +188,20 @@ void RayTracer::render_worker()
     //has been entirely populated. 
     while (!this->dirtyFlags & FLAG_EXIT)
     {
-        
-        //TODO: Wait for a work token
+        //Instantiation of the lock with this constructor will lock the mutex. 
         std::unique_lock<std::mutex> worklk = worklk(this->workSemaMux);
         while(this->workToken <= 0) this->workSema.wait(worklk);
         this->workToken--;
         worklk.unlock()
 
-        while (this->nextPixel < this->renderHeight * this->renderWidth)
+        while (this->nextPixel < this->_height * this->_width)
         {    
             pix = ++(this->nextPixel) //Maybe i'm over thinking how the volatile keyword works.
             pix -= 1;
 
 
-            x = pix % this->renderWidth;
-            y = (int)(pix / this->renderWidth);
+            x = pix % this->_width;
+            y = (int)(pix / this->_width);
             ptr = this->renderData + (this->renderBPL*y) + (x*4);
 
             colour = getPixel(ray, cr, x+i, y+j);
@@ -198,12 +211,21 @@ void RayTracer::render_worker()
             *(p++) = ~0;
         }
 
-        //TODO: Signal master of completion. 
-            //Decrement the worktokens by 1. 
+        //Inidicate that we have finished and return to await another signal to
+        //start processing.
+        worklk.lock();
+        this->workToken--;
+        worklk.unlock();
+        //There is a chance that other threads have been created but the 
+        //number of workers has been reduced, they are still waiting on
+        //conditional variable, so we notify all to ensure we do awaken
+        //the master thread.
+        this->workSema.notify_all(); 
+
+        //The work of the worker is done, it has completed its section of the image. 
+        //The RayTracer will build an image from the data in the array provided to
+        //this worker.   
     }
-    //The work of the worker is done, it has completed its section of the image. 
-    //The RayTracer will build an image from the data in the array provided to
-    //this worker.
 }
 
 QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)

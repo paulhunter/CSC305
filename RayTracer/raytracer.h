@@ -49,8 +49,13 @@ private:
 	// ///////////////////////////
 	// Render Details
 	// ///////////////////////////
-	//Storage for configuration changes before application. 
+	// Manipulations to the settings of the render is done through a 
+	// a set of pubilc methods which manipulate the variables below. 
+	// At the start of each frame render the settings are checked for 
+	// changes, at which point these values are copied into the 
+	// internals versions which start with an underscore. 
 	volatile int renderWidth, renderHeight, renderThreadCount;
+	volatile int _width, _height, _workerCount;
 	std::mutex managedInterfaceLock;
 	// Internals. 
 
@@ -68,16 +73,15 @@ private:
 	std::condition_variable workSema;
 	std::mutex workSemaMux;
 	
-
-	
-
+	//Render Frame Data
 	unsigned char* renderData;
+	volatile uint renderBPL; //Bytes per line.
+	//Last rendered image.
 	QImage * image;
-
-	//
 	
 
-	uint renderBPL; //Bytes per line. 
+
+ 
 	volatile bool cancelRender;
 
 	std::mutex renderMux;
