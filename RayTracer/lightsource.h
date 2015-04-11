@@ -15,18 +15,21 @@ class LightSource
 {
 public:
 	/** A 'standard' white light source at 0,10,0; */
-	LightSource();
-	LightSource(QVector3D position, double intensity, double ambientIntensity);
-    LightSource(QVector3D colour, QVector3D position, double intensity, double ambientIntensity);
+	LightSource(SceneGraphNode * source, double intensity, double ambientIntensity);
+    
+    /* Perhaps later add this back wrapping a simple sphere/point source */
+    //LightSource(QVector3D colour, QVector3D position, double intensity, double ambientIntensity);
 
-	//QVector3D getLightDirection(QVector3D destination);
-	//double intersect(Ray ray);
+	QVector3D getLightDirection(QVector3D destination);
 
-	QVector3D position;
-    QVector3D colour;
 	double intensity;
 	double ambientIntensity;
-	//SceneObject *source;
+
+	SceneObject *getObject();
+	SceneObjectProperties *getLightProperties();
+private:
+	SceneGraphNode *source;
+
 };
 
 
