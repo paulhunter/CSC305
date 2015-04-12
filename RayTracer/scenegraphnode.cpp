@@ -24,7 +24,7 @@ SceneObjectProperties* SceneGraphNode::getMaterial()
 bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
 {
     double r;
-    transform = localTransform * transform;
+    transform = ths->sceneObject->localTransform * transform;
     if(this->sceneObject != NULL)
     {
         r = this->sceneObject->intersects(ray, transform);

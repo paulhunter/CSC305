@@ -14,7 +14,7 @@
  #include "ray.h"
 
 
-class Sphere : public SceneObject
+class Sphere : public Primtive
 {
 public:
 	/** 
@@ -22,10 +22,10 @@ public:
 	 */
 	Sphere();
 	
-	/* See sceneobject.h */
+	/* See primitive.h */
 	double intersects(Ray ray, QMatrix4x4 transform);
 	
-	/* See sceneobject.h */
+	/* See primitive.h */
 	QVector3D getNormal(QVector3D p, QMatrix4x4 transform);
 
 };

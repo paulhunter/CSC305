@@ -1,7 +1,8 @@
 /**
  * sceneobject.h
- * Scene objects are physical entities within the scene This with expand on this
- * base class are primitive shapes such as a sphere, and will support the needed properties.  
+ * Scene objects are physical entities within the scene. The include a
+ * primitive object that defines their geometry, and a transform 
+ * providing its location and final shape. 
  */
 
 #ifndef SCENEOBJECT_H
@@ -25,6 +26,11 @@ public:
 	 * get the normal vector from a point object.
 	 */
     virtual QVector3D getNormal(QVector3D point, QMatrix4x4 transform) = 0;
+
+    /**
+     * A local
+     */
+    QMatrix4x4 localTransform;
 };
 
 
