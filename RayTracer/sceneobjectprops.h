@@ -15,19 +15,18 @@ public:
 	SceneObjectProperties();
 	
 	SceneObjectProperties(
-		QVector3D colour, 
-		double shine,
-        QVector3D specularCoef,
-		QVector3D ambientColour,
-		double refractiveIndex,
-		double mirror);
+		QVector3D diffusionCeof
+        QVector3D specularCoef);
 
-	QVector3D colour;
-	double shine;
-	QVector3D specularCoef;
-	QVector3D ambientColour;
-	double refractiveIndex;
-	double mirror;
+	void setIsLight(bool light)
+	{
+		this->light = light;
+	}
+
+	/* The object is a lightsource */
+	bool light;
+	QVector3D diffusionCoef; //Surface Colour
+	QVector3D specularCoef;//Reflectance
 };
 
 

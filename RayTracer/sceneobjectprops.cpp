@@ -2,26 +2,16 @@
 
 SceneObjectProperties::SceneObjectProperties()
 {
-    colour = QVector3D(0.75, 0.75, 0.0);
-	shine = 100;
-	specularCoef = QVector3D(0.5, 0.5, 0.5);
-	ambientColour = QVector3D(0.3,0.3,0.3);
-	refractiveIndex = 0;
-	mirror = 1;
+    this->diffusionCeof = QVector3D(0.75, 0.75, 0.75);
+    this->specularCoef = QVector3D(0,0,0);
+    this->light = false;
 }
 
 SceneObjectProperties::SceneObjectProperties(
-		QVector3D colour, 
-		double shine,
-        QVector3D specularCoef,
-		QVector3D ambientColour,
-		double refractiveIndex,
-		double mirror)
+		QVector3D diffusionCeof
+        QVector3D specularCoef)
 {
-	this->colour = colour;
-	this->shine = shine;
+	this->diffusionCeof = diffusionCeof;
 	this->specularCoef = specularCoef;
-	this->ambientColour = ambientColour;
-	this->refractiveIndex = refractiveIndex;
-	this->mirror = mirror;	
+	this->light = false;
 }
