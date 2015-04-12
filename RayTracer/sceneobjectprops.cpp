@@ -8,10 +8,19 @@ SceneObjectProperties::SceneObjectProperties()
 }
 
 SceneObjectProperties::SceneObjectProperties(
-		QVector3D diffusionCeof
-        QVector3D specularCoef)
+	QVector3D emission)
 {
+	this->emission = emission;
+}
+
+SceneObjectProperties::SceneObjectProperties(
+		QVector3D ambientCoef,
+		QVector3D diffusionCeof,
+        QVector3D specularCoef, 
+        double shininess)
+{
+	this->ambientCoef = ambientCoef;
 	this->diffusionCeof = diffusionCeof;
 	this->specularCoef = specularCoef;
-	this->light = false;
+	this->shininess = shininess;
 }
