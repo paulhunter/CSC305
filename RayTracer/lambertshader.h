@@ -13,7 +13,7 @@ class LambertShader : public Shader
 public:
 	LambertShader();
 
-	QVector3D getPixelColour(QVector3D surfacePoint, QVector3D surfaceNormal, SceneObjectProperties* material, LightSource* light);
+	QVector3D getPixelColour(CastResult* cast, SceneManager* scene);
 };
 
 
