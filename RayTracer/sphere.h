@@ -1,7 +1,7 @@
 /** 
  * sphere.h 
- * A primitive representing a sphere and providing means of
- * finding the intersection of a ray with it. 
+ * A Sphere Primitive. 
+ * 1m in radius, center positioned at the origin.
  */
 
  #ifndef SPHERE_H
@@ -18,7 +18,7 @@ class Sphere : public Primtive
 {
 public:
 	/** 
-	 *
+	 * Basic Constructor.
 	 */
 	Sphere();
 	
