@@ -3,6 +3,9 @@
  * Primitives are simple geometry
  */
 
+#ifndef PRIMITIVE_H
+#define PRIMITIVE_H
+
 class Primtive
 {
 	Primtive() {}
@@ -18,4 +21,6 @@ class Primtive
 	 */
 	virtual QVector3D getNormal(QVector3D point, QMatrix4x4 transform) = 0;
 
-}
+};
+
+#endif

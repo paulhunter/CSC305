@@ -23,7 +23,10 @@ SOURCES += main.cpp\
     shader.cpp \
     lightsource.cpp \
     lambertshader.cpp \
-    castresult.cpp
+    castresult.cpp \
+    plane.cpp \
+    sceneobjectfactory.cpp \
+    materialsfactory.cpp
 
 HEADERS  += mainwindow.h \
     sphere.h \
@@ -36,6 +39,11 @@ HEADERS  += mainwindow.h \
     lightsource.h \
     shader.h \
     lambertshader.h \
-    castresult.h
+    castresult.h \
+    plane.h \
+    sceneobjectfactory.h \
+    materialsfactory.h \
+    utils.h \
+    primitive.h
 
 FORMS    += mainwindow.ui

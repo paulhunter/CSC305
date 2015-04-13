@@ -14,7 +14,7 @@
  #include "ray.h"
 
 
-class Sphere : public Primtive
+class Sphere : public Primitive
 {
 public:
 	/** 

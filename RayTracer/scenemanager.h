@@ -17,8 +17,8 @@
  #define SCENEMANAGER_H
 
 #include <vector>
-#include <scenegraphnode.h>
-#include <lightsource.h>
+#include "scenegraphnode.h"
+#include "lightsource.h"
 
 class SceneManager
 {
@@ -30,7 +30,7 @@ public:
 	 * with each of its children before it is passed into this 
 	 * method to add it to the scene graph. 
 	 */
-	void add_sceneObject(SceneObject* obj, ObjectMaterial* material);
+    void add_sceneObject(SceneObject* obj, SceneObjectProperties* material);
 
 	/* Lights */
 	/* Add a new light source to the scene. It should be pre-
@@ -39,7 +39,7 @@ public:
 	 *
 	 * The scene manager will ensure the destruction of the light
 	 * object after use */
-	void add_lightSource(SceneObject* obj, ObjectMaterial* material);
+    void add_lightSource(SceneObject* obj, SceneObjectProperties* material);
 
 	/* Utilities */
 	/* Cast a ray into the scene, returning the results of the

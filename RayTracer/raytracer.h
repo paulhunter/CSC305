@@ -11,8 +11,8 @@
 
 #include <time.h>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
+#include <mutex.h>
+#include <condition_variable.hd>
 
 #include <ray.h>
 #include "shader.h"

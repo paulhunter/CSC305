@@ -13,14 +13,14 @@
 #include "sceneobject.h"
 #include "sphere.h"
 #include "plane.h"
-#include "primitivefactory.h"
+#include "primitive.h"
 
 class SceneObjectFactory;
 
 enum PrimtiveType
 {
 	SPHERE, /* 1m Radius, Centered on Origin */
-	PLANE, /* Default, Laying on XZ Plane */
+    PLANE /* Default, Laying on XZ Plane */
 };
 
 class SceneObjectFactory

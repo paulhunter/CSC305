@@ -9,6 +9,7 @@
 #define SCENEOBJECT_H
 
 #include "ray.h"
+#include "primitive.h"
 
 class SceneObject 
 {

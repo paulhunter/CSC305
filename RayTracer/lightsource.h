@@ -27,7 +27,7 @@ public:
 	SceneObject *getObject();
 	SceneObjectProperties *getLightProperties();
 private:
-	SceneGraphNode *source;
+    SceneGraphNode * source;
 };
 
 
