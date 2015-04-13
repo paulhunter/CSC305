@@ -7,18 +7,19 @@ LambertShader::LambertShader()
 
 QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 {
+    qDebug() << "Lambert Shader Start";
 	/* Ambient Component - Dummy lighting value of 0.005 */
 	QVector3D ambient = 0.005 * cast->subjectProperties->ambientCoef;
-
+    qDebug() << "Lambert Shader Ambient Done";
 	/* Diffusion Component */
 	QVector3D diffusion(0,0,0);  //The light coeffecient returned is RGB channeled. 
-    Ray ray;
-	CastResult* cr = new CastResult();
+    Ray *ray = new Ray();
+    CastResult *cr = new CastResult();
     for(std::vector<LightSource*>::iterator it = scene->lights.begin(); it != scene->lights.end(); ++it)
 	{
         LightSource* light = (*it);
 		//If in shadow, do not add its intensity.
-        ray.set(cast->surfacePoint, light->getLightVector(cast->surfacePoint));
+        ray->set(cast->surfacePoint, light->getLightVector(cast->surfacePoint));
 		cr->reset();
         if(scene->cast_ray_into_scene(ray, cr) && cr->subject != light->getObject())
 		{
@@ -52,6 +53,6 @@ QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 	color.setX(fmin(1, color.x()));
 	color.setY(fmin(1, color.y()));
 	color.setZ(fmin(1, color.z()));
-
+    qDebug() << "Lambert Shader Complete";
 	return color;
 }

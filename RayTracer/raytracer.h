@@ -43,6 +43,8 @@ public:
 
 	Shader* activeShader;
 
+    QImage * image;
+
 	/* Manually set the thread count of the render process. 
 	 * Caution, adding threads past the number of available logical
 	 * processors, which is often 8 on most systems these days, will
@@ -85,7 +87,7 @@ private:
 	unsigned char* renderData;
 	volatile uint renderBPL; //Bytes per line.
 	//Last rendered image.
-	QImage * image;
+
 
 	//TEMPORARY
 	double cameraFocalLength;
@@ -95,6 +97,7 @@ private:
     QVector3D getPixel(Ray* ray, CastResult* cr, int x, int y);
 
     void render_reconfigure();
+    static void* render_master_dummy(void * ptr);
     void render_master();
     static void* render_worker_dummy(void * ptr);
     void render_worker();

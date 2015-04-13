@@ -9,7 +9,7 @@ Plane::Plane()
 
 }
 
-double Plane::intersects(Ray ray, QMatrix4x4 transform)
+double Plane::intersects(Ray *ray, QMatrix4x4 transform)
 {
 	/**
 	 * We use the formulas available from Shirley pg 78
@@ -36,12 +36,12 @@ double Plane::intersects(Ray ray, QMatrix4x4 transform)
 	 d = ap.x() - cp.x();
 	 e = ap.y() - cp.y();
 	 f = ap.z() - cp.z();
-	 g = ray.direction.x();
-	 h = ray.direction.y();
-	 i = ray.direction.z();
-	 j = ap.x() - ray.origin.x();
-	 k = ap.y() - ray.origin.y();
-	 l = ap.z() - ray.origin.z();
+     g = ray->direction.x();
+     h = ray->direction.y();
+     i = ray->direction.z();
+     j = ap.x() - ray->origin.x();
+     k = ap.y() - ray->origin.y();
+     l = ap.z() - ray->origin.z();
 
 	 ei_hf = e*i-h*f;
 	 gf_di = g*f-d*i;

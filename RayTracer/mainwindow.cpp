@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "unistd.h"
+#include <QPixmap>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -8,14 +10,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     qDebug() << "Main: Creating Ray Tracer";
-    RayTracer rt = RayTracer();
-    qDebug() << "Main: Rendering...";
-    //QImage toDisplay = rt.render(this->ui->image->width(), this->ui->image->height());
-
-    //this->ui->image->setPixmap(QPixmap::fromImage(toDisplay));
+    this->rt = new RayTracer();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    this->ui->image->setPixmap(QPixmap::fromImage(*(rt->image)));
 }

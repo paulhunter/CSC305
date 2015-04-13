@@ -21,12 +21,18 @@ SceneObjectProperties* SceneGraphNode::getSceneObjectProperties()
     return this->sceneObjectProperties;
 }
 
-bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
+bool SceneGraphNode::castRay(Ray *ray, QMatrix4x4 transform, CastResult *result)
 {
     double r = -1;
-    transform = this->sceneObject->localTransform * transform;
-    if(this->sceneObject != NULL)
+    qDebug() << "HERE";
+
+    if(this->sceneObject == NULL)
     {
+        qDebug() << "SceneGraphNode: Root : Cast Ray";
+    }
+    else
+    {
+        transform = this->sceneObject->localTransform * transform;
         r = this->sceneObject->intersects(ray, transform);
         if(r > 0 &&
             (result->t < 0 || r < result->t))
@@ -34,7 +40,7 @@ bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
             result->subject = this->sceneObject;
             result->subjectProperties = this->sceneObjectProperties;
             result->t = r;
-            result->surfacePoint = ray.origin + r*ray.direction;
+            result->surfacePoint = ray->origin + r*ray->direction;
             result->surfaceNormal = this->sceneObject->getNormal(result->surfacePoint, transform);
             //As we discussed in class, the 'Black Plague' occurs when points on a surface are
             //calculated and as a result of precision errors it ends up calculated as behind

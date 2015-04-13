@@ -23,7 +23,7 @@ public:
 	 * Returns the t value of the point on the sphere if hit, 
 	 * otherwise, the result will be <0;
 	 */
-	double intersects(Ray ray, QMatrix4x4 transform);
+    double intersects(Ray *ray, QMatrix4x4 transform);
 	
 	/**
 	 * get the normal vector from a point on the shell of the sphere. 

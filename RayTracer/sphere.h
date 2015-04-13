@@ -24,7 +24,7 @@ public:
 	Sphere();
 	
 	/* See primitive.h */
-	double intersects(Ray ray, QMatrix4x4 transform);
+    double intersects(Ray *ray, QMatrix4x4 transform);
 	
 	/* See primitive.h */
 	QVector3D getNormal(QVector3D p, QMatrix4x4 transform);

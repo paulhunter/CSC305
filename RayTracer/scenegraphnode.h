@@ -34,7 +34,7 @@ public:
      * 
      * Note, the t value test for True, is >= 0. 
      */
-    bool castRay(Ray ray, QMatrix4x4 transform, CastResult *result);
+    bool castRay(Ray *ray, QMatrix4x4 transform, CastResult *result);
 
 	/** Add a child to this node */
 	void addChild(SceneGraphNode *child);

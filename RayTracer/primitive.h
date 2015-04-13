@@ -28,7 +28,7 @@ public:
 	 * Returns the t value of the point on the geometry if it hits, 
 	 * otherwise, the result will be <0; 
 	 */
-	virtual double intersects(Ray ray, QMatrix4x4 transform) = 0;
+    virtual double intersects(Ray *ray, QMatrix4x4 transform) = 0;
 
 	/**
 	 * get the normal vector from the point on the surface.

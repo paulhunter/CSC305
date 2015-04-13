@@ -46,7 +46,7 @@ public:
 	 * collision in the provided and previously allocated
 	 * cast result. 
 	 */
-	bool cast_ray_into_scene(Ray ray, CastResult *result);
+    bool cast_ray_into_scene(Ray *ray, CastResult *result);
 
 	std::vector<LightSource*> lights;
 private:

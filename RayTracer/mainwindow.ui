@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1670</width>
-    <height>962</height>
+    <width>1664</width>
+    <height>1003</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -45,13 +45,26 @@
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>920</y>
+      <width>114</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ShowRender</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1670</width>
+     <width>1664</width>
      <height>22</height>
     </rect>
    </property>

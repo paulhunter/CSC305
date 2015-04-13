@@ -11,7 +11,7 @@ Sphere::Sphere()
 }
 
 /* Primtive Method */
-double Sphere::intersects(Ray ray, QMatrix4x4 transform)
+double Sphere::intersects(Ray *ray, QMatrix4x4 transform)
 {
 	//Default sphere is at 0,0,0 with radius 1.
 	QVector3D origin(0,0,0);
@@ -23,10 +23,10 @@ double Sphere::intersects(Ray ray, QMatrix4x4 transform)
     //qDebug() << "Sphere: aPoint (after transform): " << aPoint;
 
 	double radius = (aPoint - origin).length();
-	QVector3D pmc = ray.origin - origin;
+    QVector3D pmc = ray->origin - origin;
 
-	double A = QVector3D::dotProduct(ray.direction, ray.direction);
-	double B = QVector3D::dotProduct(ray.direction, pmc);
+    double A = QVector3D::dotProduct(ray->direction, ray->direction);
+    double B = QVector3D::dotProduct(ray->direction, pmc);
 	double C = QVector3D::dotProduct(pmc, pmc) - (radius * radius);
 	double d = (B * B) - (A * C);
 
