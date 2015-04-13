@@ -15,7 +15,7 @@ class LightSource
 {
 public:
 	/** A 'standard' white light source at 0,10,0; */
-	LightSource(SceneGraphNode * source, double intensity, double ambientIntensity);
+	LightSource(SceneGraphNode * source);
     
     /* Perhaps later add this back wrapping a simple sphere/point source */
     //LightSource(QVector3D colour, QVector3D position, double intensity, double ambientIntensity);
@@ -24,14 +24,10 @@ public:
 	 * the light source */
 	QVector3D getLightVector(QVector3D surfacePoint);
 
-	double intensity;
-	double ambientIntensity;
-
 	SceneObject *getObject();
 	SceneObjectProperties *getLightProperties();
 private:
 	SceneGraphNode *source;
-
 };
 
 
