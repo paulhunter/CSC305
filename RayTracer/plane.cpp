@@ -18,11 +18,12 @@ double Plane::intersects(Ray ray, QMatrix4x4 transform)
 	 * this at a later time. 
 	 */
 
-	 //Base plase is on the ground, and is a metre square.
+	 //Base plase is on the ground, and is a metre square,
+	 //centered on the origin.
 	 QVector3D a, b, c;
-	 ap = transform * QVector3D(0.5, 0, 0.5);
-	 bp = transform * QVector3D(0.5, 0, -0.5);
-	 cp = transform * QVector3D(-0.5, 0, -0.5);
+	 QVector3D ap = transform * QVector3D(0.5, 0, 0.5);
+	 QVector3D bp = transform * QVector3D(0.5, 0, -0.5);
+	 QVector3D cp = transform * QVector3D(-0.5, 0, -0.5);
 
 	 double B, Y, t, M;
 	 double a,b,c,d,e,f,g,h,i,j,k,l;
@@ -60,7 +61,7 @@ double Plane::intersects(Ray ray, QMatrix4x4 transform)
 		 						 //Normal what it us used for that.
 	 }
 
-	 /*
+	 /* for Triangles.
 	 B = j*ei_hf + k*gf_di + l*dh_eg;
 	 B = B / M;
 	 Y = i*ak_jb + e*jc_al + d*bl_kc;
@@ -71,7 +72,12 @@ double Plane::intersects(Ray ray, QMatrix4x4 transform)
 
 QVector3D getNormal(QVector3D p, QMatrix4x4 transform)
 {
-
+	QVector3D o = transform * QVector3D(1,0,0);
+	QVector3D a = transform * QVector3D(0,0,0);
+	QVector3D b = transform * QVector3D(0,0,1);
+	return QVector3D::crossProduct(
+		(a-o).normalized(),
+		(b-o).normalized()).normalized();
 }
 
 #endif

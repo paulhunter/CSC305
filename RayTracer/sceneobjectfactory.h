@@ -12,13 +12,15 @@
 
 #include "sceneobject.h"
 #include "sphere.h"
+#include "plane.h"
 #include "primitivefactory.h"
 
 class SceneObjectFactory;
 
 enum PrimtiveType
 {
-	SPHERE /* 1m 
+	SPHERE, /* 1m Radius, Centered on Origin */
+	PLANE, /* Default, Laying on XZ Plane */
 };
 
 class SceneObjectFactory
@@ -47,7 +49,8 @@ private:
 
 	/* Allocated at .... runtime? Compile time? */
 	static Primtive * primitives[] = {
-		new Sphere()
+		new Sphere(),
+		new Plane()
 	};
 
 };
