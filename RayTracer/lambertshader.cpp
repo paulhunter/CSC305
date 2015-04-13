@@ -8,7 +8,7 @@ LambertShader::LambertShader()
 QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 {
 	/* Ambient Component - Dummy lighting value of 0.3 */
-	QVector3D ambient = 0.3 * cast->subjectProperties->diffussionCoef;
+	QVector3D ambient = 0.3 * cast->subjectProperties->ambientCoef;
 
 	/* Diffusion Component */
 	QVector3D diffusion(0,0,0);  //The light coeffecient returned is RGB channeled. 
@@ -39,7 +39,7 @@ QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 		}
 	}
 
-	//With the light hitting the surface calcated, muttiple by the surfaces diffusion
+	//With the light hitting the surface calcated, muttiply by the surfaces diffusion
 	//coeffecient to find out how much of it gets back to the camera. 
 	diffusion = diffusion * cast->subjectProperties->diffusionCoef;
 
