@@ -8,12 +8,46 @@
 
 RayTracer::RayTracer()
 {
-	//Add scene creation.
+	// //////////////////////////////////////////////////////////////////////
+    // SCENE CREATION 
+    // Room with three walls, left, back, and right. 
+    // A ground plane.
+    // Three Spheres within the room of various size and material.
+    // //////////////////////////////////////////////////////////////////////
 	this->sceneManager = new SceneManager();
 
-    Sphere *s = new Sphere(), 
-    sphere->localTransform.scale(150);
-    this->sceneManager->add_sceneObject(s, new SceneObjectProperties());
+    /*Shiny Big Sphere */
+    SceneObject* silverSphere = SceneObjectFactory::createSceneObject_wScale(SPHERE, QVector3D(-2.5, 5, -2.5), 2);
+    this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(GREY_FLAT));
+
+    /* Orange Back Sphere */
+    SceneObject* orangeSphere = SceneObjectFactory::createSceneObject_wScale(SPHERE, QVector3D(2.5, 3, -2.5), 1.5);
+    this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(ORANGE_FLAT));
+
+    /* Copper front sphere */ //Currently yellow
+    SceneObject* copperSphere = SceneObjectFactory::createSceneObject_wScale(SPHERE, QVector3D(2.5, 1.5, 0), 1.0);
+    this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(YELLOW_FLAT));
+
+    /* Ground Plane */
+    SceneObject* groundPlane = SceneObjectFactory::createSceneObject_wRot(PLANE, QVector3D(0,0,0));
+    this->sceneManager->add_sceneObject(groundPlane, MaterialsFactory::getMaterial(GREY_LT_FLAT));
+
+    /* Red Left Wall */
+    SceneObject* leftWall = SceneObjectFactory::createSceneObject_wRot(PLANE, QVector3D(-5, 0, 0), 0, 0, 90);
+    this->sceneManager->add_sceneObject(leftWall, MaterialsFactory::getMaterial(RED_FLAT));
+
+    /* Blue Right Wall */
+    SceneObject* rightWall = SceneObjectFactory::createSceneObject_wRot(PLANE, QVector3D(5, 0, 0), 0, 0, -90);
+    this->sceneManager->add_sceneObject(rightWall, MaterialsFactory::getMaterials(BLUE_FLAT));
+
+    /* Green Back Wall */
+    SceneObject* backWall = SceneObjectFactory::createSceneObject_wRot(PLANE, QVector3D(0,0,-5), -90, 0, 0);
+    this->sceneManager->add_sceneObject(backWall, MaterialsFactory::getMaterial(GREEN_FLAT));
+
+    /* White Corner Scene Light */
+    SceneObject* sceneLight = SceneObjectFactory::createSceneObject(SPHERE, QVector3D(10, 10, 5));
+    this->sceneManager->add_lightSource(sceneLight, MaterialsFactory::getMaterial(LIGHT_WHITE));
+    // END OF SCENE CREATION
 
     this->activeShader = new LambertShader();
 
@@ -23,28 +57,31 @@ RayTracer::RayTracer()
     //initialized. 
     this->dirtyFlags = 0x0000; 
     this->setWorkerCount(getNumCores()); 
-    this->setRenderSize(1, 1);
+    this->setRenderSize(1280, 1080);
 
     this->workTokens = 0;
     
     qDebug() << "RayTracer: System reporting " << getNumCores() << " cores online.";
     //TODO: Create master worker thread and wait it on a Semaphore.
+    
 }
 
+/* PUBLIC SETTINGS SETTERS */
 void RayTracer::setRenderSize(int width, int height)
 {
     this->managedInterfaceLock.lock();
     this->renderWidth = width;
     this->renderHeight = height;
-    this->dirtyFlags |= 0x0001; //Dimensions Flag.
+    this->dirtyFlags |= FLAG_DIMENSIONS; //Dimensions Flag.
     this->managedInterfaceLock.unlock();
 }
 
 void RayTracer::setWorkerCount(int count)
 {
     this->managedInterfaceLock.lock();
+    qDebug() << "RayTracer: Worker Count set to " << count << ".";
     this->workerCount = count;
-    this->dirtyFlags |= 0x4000; //Thread count adjustment
+    this->dirtyFlags |= FLAG_WORKER_COUNT; //Thread count adjustment
     this->managedInterfaceLock.unlock();
 }
 
@@ -92,10 +129,13 @@ void RayTracer::render_master()
      */
     //Local copies of system parameters to ensure that we don't run into issues. 
     int i;
+    uint iterations = 0;
+    clock_t start;
     
     //RenderLoop
     while(!this->dirtyFlags & FLAG_EXIT)
     {
+
         //Ensure we're up to date with our configuration. 
         if(this->dirtyFlags)
         {
@@ -113,13 +153,16 @@ void RayTracer::render_master()
         }
 
         //Perform standard iteration resets;
+        iterations += 1;
         this->nextPixel = 0;
 
-        //TODO: Ensure we are not in paused state.
+        //TODO: Ensure we are not in paused state?
 
         //Everything is in order. Run an iteration. 
+        qDebug() << "RayTracer: Starting Iteration " << iterations << ".";
 
         //Distribute a number of tokens for workers.
+        qDebug() << "RayTracer: Distributing " << workerCount << "work tokens.";
         std::unique_lock<std::mutex> worklk(this->workSemaMux);
         this->workTokens = workerCount; 
 
@@ -128,7 +171,7 @@ void RayTracer::render_master()
         //all of them and let them fight for a token.
         this->workSema.notify_all();
         worklk.unlock();
-
+        start = clock();
         //At this point, each otherkers has been placed in a ready state to try for
         //the lock on the work mutex. As they wake and each will decriment the work 
         //tokens and release the lock themselves, carrying on to work. When they finish
@@ -137,6 +180,7 @@ void RayTracer::render_master()
         //Now the master needs to wait to ensure all workers started
         while(this->workTokens > 0); //Spin wait, we dont expect it to be long. 
             //DEBUG: Can print to indicate number of workers started as expected.
+        qDebug() << "RayTracer: All work tokens consumed. Waiting for completion.";
 
         //Wait for each of the workers to finish. When they do each of them will
         //decrement the work tokens counter another time, so when all workers
@@ -147,7 +191,7 @@ void RayTracer::render_master()
         worklk.unlock(); //The lock would go out of scope and unlock at the end of the iteration
                          //but i dont think we need to hang on to it past this point.
 
-        
+        qDebug() << "RayTracer: Render Complete (" << clock() - start << " seconds).";
 
         //TODO: Send signal to repaint the image. I'm interested to see if there is any issue given
         //      the operations of changing colours are mostly atomic. Some pixels perhaps will have
@@ -177,30 +221,34 @@ void RayTracer::render_worker()
      */
     QVector3D colour;
     // TODO: CAMERA CONTROLS
-    Ray* ray = new Ray(QVector3D(0,0,800), QVector3D(0,0,-1))
-    CastResult cr = new CastResult()
+    //Look from the 
+    Ray* ray = new Ray(QVector3D(2.0,5,4.95), QVector3D(-1,-0.2,-1).normalized());
+    CastResult cr = new CastResult();
     unsigned char* ptr;
+
     uint x, y;
     uint pix;
     //We want to run as a worker until either the cancel flag is set, or the image
     //has been entirely populated. 
-    while (!this->dirtyFlags & FLAG_EXIT)
+    while (!(this->dirtyFlags & FLAG_EXIT))
     {
+
         //Instantiation of the lock with this constructor will lock the mutex. 
         std::unique_lock<std::mutex> worklk = worklk(this->workSemaMux);
         while(this->workToken <= 0) this->workSema.wait(worklk);
         this->workToken--;
         worklk.unlock()
+        qDebug() << "RayTracer.render_worker: Iteration Started.";
 
         while (this->nextPixel < this->_height * this->_width)
-        {    
+        {   
             pix = ++(this->nextPixel) //Maybe i'm over thinking how the volatile keyword works.
             pix -= 1;
-
 
             x = pix % this->_width;
             y = (int)(pix / this->_width);
             ptr = this->renderData + (this->renderBPL*y) + (x*4);
+            qDebug() << "RayTracer.render_worker: Assigned Pixel: (" << x << ", " << y ")";
 
             colour = getPixel(ray, cr, x, y);
             *(p++) = max(0, min(colour.x() * 255, 255));
@@ -209,6 +257,7 @@ void RayTracer::render_worker()
             *(p++) = ~0;
         }
 
+        qDebug() << "RayTracer.render_worker: Worker complete.";
         //Inidicate that we have finished and return to await another signal to
         //start processing.
         worklk.lock();
@@ -233,20 +282,19 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
     go in here */
 
     QVector3D result;
-    //ray.setToPerspectiveRay(focalLength, renderWidth, renderHeight, x, y);
-    ray.setToOrthographicRay(cameraFocalLength, renderWidth, renderHeight, x, y);
+    ray.setToPerspectiveRay(1, renderWidth, renderHeight, x, y);
+    ray.setToOrthographicRay(2.0, renderWidth, renderHeight, x, y);
     if(this->sceneManager->castRay(ray, cr))
     {
         //If we have hit something that is ahead of our vision plane, use
         //the currently shader model to determine pixel colour.
-        result += this->activeShader->getPixelColour(cr->surfacePoint,
-           cr->surfaceNormal, cr->subjectProperties, this->sceneLight) ;
+        result += this->activeShader->getPixelColour(cr, this->sceneManager);
     }
     else
     {
         //We didn't hit anything in the scene! Use a background colour
-        //of dark grey to indicate this.
-        result += QVector3D(0.3,0.3,0.3);
+        //of hot pink/magenta to indicate this, making it obvious.
+        result += QVector3D(1.0,0.1137,0.8078);
     }
     return result;
 }

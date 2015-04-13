@@ -70,30 +70,22 @@ private:
 	// 0x8000 - Exit
 	volatile uint dirtyFlags;
 	volatile uint nextPixel;
+	std::thread* master;
 	std::vector<std::thread *> workers;
 	volatile uint workTokens;
 	//Conditional Variables requires a Mutex to lock on. 
 	std::condition_variable workSema;
 	std::mutex workSemaMux;
+
 	
 	//Render Frame Data
 	unsigned char* renderData;
 	volatile uint renderBPL; //Bytes per line.
 	//Last rendered image.
 	QImage * image;
-	
-
-
- 
-	volatile bool cancelRender;
-
-	std::mutex renderMux;
-
 
 	//TEMPORARY
 	double cameraFocalLength;
-	LightSource* sceneLight;
-
 };
 
 #endif
