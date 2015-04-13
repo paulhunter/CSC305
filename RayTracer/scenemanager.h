@@ -42,8 +42,7 @@ public:
 	void add_lightSource(SceneObject* obj, ObjectMaterial* material);
 
 	/* Add a new light with a specified intensity. */
-	void add_lightSource(SceneObject* obj, ObjectMaterial* material,
-		double intensity, double ambientIntensity);
+	void add_lightSource(SceneObject* obj, ObjectMaterial* material);
 
 	/* Utilities */
 	/* Cast a ray into the scene, returning the results of the

@@ -16,6 +16,9 @@
 
 #include <ray.h>
 #include "shader.h"
+#include "sceneobject.h"
+#include "sceneobjectfactory.h"
+#include "materialsfactory.h"
 #include "lambertshader.h"
 
 #include "lightsource.h"

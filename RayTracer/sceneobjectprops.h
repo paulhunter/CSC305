@@ -29,7 +29,7 @@ public:
 	QVector3D ambientCoef; //Ambient Surface Colour
 	QVector3D diffusionCoef; //Surface Colour
 	QVector3D specularCoef;//Reflectance Colour
-	double shininess; //Specular power
+	double shininess; //Specular power 0-128
 
 };
 
