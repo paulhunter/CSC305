@@ -31,6 +31,8 @@ public:
 
     /** cast a given ray providing its basis matrix, return true if intersections occurs,
      *  in which case use the resulting CastResult information to determine shading, etc.
+     * 
+     * Note, the t value test for True, is >= 0. 
      */
     bool castRay(Ray ray, QMatrix4x4 transform, CastResult *result);
 

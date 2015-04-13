@@ -2,7 +2,7 @@
 #include <QDebug>
 
 #ifndef EPSILON
-#define EPSILON 0.0001f
+#define EPSILON 0.000001f
 #endif
 
 SceneGraphNode::SceneGraphNode(SceneObject *object, SceneObjectProperties *material)
@@ -23,16 +23,16 @@ SceneObjectProperties* SceneGraphNode::getSceneObjectProperties()
 
 bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
 {
-    double r;
+    double r = -1;
     transform = ths->sceneObject->localTransform * transform;
     if(this->sceneObject != NULL)
     {
         r = this->sceneObject->intersects(ray, transform);
-        if(r > 1 &&
+        if(r > 0 &&
             (result->t < 0 || r < result->t))
         {
             result->subject = this->sceneObject;
-            result->subjectProperties = this->material;
+            result->subjectProperties = this->SceneObjectProperties;
             result->t = r;
             result->surfacePoint = ray.origin + r*ray.direction;
             result->surfaceNormal = this->sceneObject->getNormal(result->surfacePoint, transform);
@@ -49,7 +49,7 @@ bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
         (*i)->castRay(ray, transform, result);
     }
 
-    if(result->t >= 1)
+    if(result->t >= 0)
     {
         return true;
     }
