@@ -30,15 +30,11 @@ public:
 	/* Create a basic object at the given position in space. */
 	static SceneObject* createSceneObject(PrimitiveType type, QVector3D position);
 
+	/* Create a primitive, scale it by a factor, rotate it about the x, y, z
+	 * axes, in that order, finally translating it to the position */
+	static SceneObject* createSceneObject_wRot(PrimitiveType type, QVector3D position, double scale, double x, double y, double z);
+
 private:
-	/* Private constructor called by the getInstance() method */
-	SceneObjectFactory();
-
-	/* The single instance in memory */
-	static SceneObjectFactory * instance;
-
-	/* Retrive, or create and then retrieve, the single instance */
-	static SceneObjectFactory * getInstance();
 
 	/* Retrieve the single instance of a given primive from memory */
 	static Primitive * getPrimtive(PrimtiveType type)

@@ -1,23 +1,21 @@
 #include "sceneobjectfactory.h"
 
-SceneObjectFactory::SceneObjectFactory()
-{
-
-}
-
-SceneObjectFactory* SceneObjectFactory::getInstance()
-{
-	if (instance == NULL)
-	{
-		instance = new SceneObjectFactory();
-	}
-	return instance;
-}
-
 SceneObject* SceneObjectFactory::createSceneObjectAtPos(PrimitiveType type, QVector3D position)
 {
 	SceneObject* result = new SceneObject();
 	result->primitive = getPrimitive(type);
 	result->transform.translate(position);
 	return result;
+}
+
+SceneObject* SceneObjectFactory::createSceneObject_wScaleRot(PrimitiveType type, 
+	QVector3D position, double, scale, double x, double y, double z)
+{
+	SceneObject* result = new SceneObject();
+	result->primitive = getPrimitive(type);
+	result->transform.scale(scale);
+	result->transform.rotate(x, 1,0,0);
+	result->transform.rotate(y, 0,1,0);
+	result->transform.rotate(z, 0,0,1);
+	result->transform.translate(position);
 }
