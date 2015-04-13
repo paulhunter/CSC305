@@ -20,6 +20,5 @@ void SceneManager::add_lightSource(SceneObject* obj, SceneObjectProperties* mate
 
 bool SceneManager::cast_ray_into_scene(Ray *ray, CastResult *result)
 {
-    qDebug() << "SceneManager: cast ray";
 	return this->root->castRay(ray, QMatrix4x4(), result);
 }

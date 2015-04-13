@@ -42,7 +42,7 @@ void Ray::setToPerspectiveRay(double focalLength, double screenWidth, double scr
 	double midu = ((-screenWidth/2.0) + (i + 0.5)) / screenWidth;
 	double midv = ((screenHeight/2.0) - (j - 0.5)) / screenHeight;
 	this->origin = this->eyePos + (midu * u) + (midv * v);
-	this->direction = ((-w*(0.5)) + (midu * u) + (midv * v)).normalized();
+    this->direction = ((-w*(0.5*focalLength)) + (midu * u) + (midv * v)).normalized();
 	//Hard coded for the moment. 
 }
 

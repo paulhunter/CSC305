@@ -24,11 +24,10 @@ SceneObjectProperties* SceneGraphNode::getSceneObjectProperties()
 bool SceneGraphNode::castRay(Ray *ray, QMatrix4x4 transform, CastResult *result)
 {
     double r = -1;
-    qDebug() << "HERE";
 
     if(this->sceneObject == NULL)
     {
-        qDebug() << "SceneGraphNode: Root : Cast Ray";
+        //qDebug() << "SceneGraphNode: Root : Cast Ray";
     }
     else
     {

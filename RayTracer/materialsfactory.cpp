@@ -48,7 +48,7 @@ MaterialsFactory::MaterialsFactory()
             12.8); //SHININESS
 
         //BLUE_FLAT,
-    this->materials[INDIGO_FLAT] = new SceneObjectProperties(
+    this->materials[BLUE_FLAT] = new SceneObjectProperties(
             QVector3D(0,0,0), //AMBIENT
             QVector3D(0.0, 0.0, 1.0), //DIFFUSE
             QVector3D(0.0225, 0.0225, 0.0225), //SPECULAR

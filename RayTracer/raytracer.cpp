@@ -23,16 +23,16 @@ RayTracer::RayTracer()
 	this->sceneManager = new SceneManager();
 
     /*Shiny Big Sphere */
-    SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(-2.5, 5, -2.5), 2);
-    this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(MaterialsFactory::GREY_FLAT));
+    SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(-2.5,5,-2.5), 4); //QVector3D(0, 5, -5), 2);
+    this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
 
     /* Orange Back Sphere */
-    //SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(2.5, 3, -2.5), 1.5);
-    //this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(MaterialsFactory::ORANGE_FLAT));
+    SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(2.5, 3, -2.5), 2.5);
+    this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(MaterialsFactory::ORANGE_FLAT));
 
     /* Copper front sphere */ //Currently yellow
-    //SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(2.5, 1.5, 0), 1.0);
-    //this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(MaterialsFactory::YELLOW_FLAT));
+    SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(2.5, 1.5, 0), 1.0);
+    this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(MaterialsFactory::YELLOW_FLAT));
 
     /* Ground Plane */
     //SceneObject* groundPlane = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::PLANE, QVector3D(0,0,0));
@@ -70,8 +70,8 @@ RayTracer::RayTracer()
     //initialized. 
     this->dirtyFlags = 0x0000; 
     this->renderData = NULL;
-    this->setWorkerCount(1);
-    this->setRenderSize(600, 400);
+    this->setWorkerCount(MAX_THREADS_P);
+    this->setRenderSize(600, 600);
 
     this->workTokens = 0;
     
@@ -265,7 +265,7 @@ void RayTracer::render_master()
 
     //Each of the workers is to exit when it completes a pixel and detects the flag set
     //to quit the application. 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < MAX_THREADS_P; i++)
     {
         pthread_join(this->workers[i], NULL);
     }
@@ -290,7 +290,8 @@ void RayTracer::render_worker()
     QVector3D colour;
     // TODO: CAMERA CONTROLS
     //Look from the 
-    Ray* ray = new Ray(QVector3D(2.0,5,4.95), QVector3D(-1,-0.2,-1).normalized());
+    Ray* ray = new Ray(QVector3D(0,5,40), QVector3D(0,0,-1).normalized());
+    //Ray* ray = new Ray(QVector3D(0,5,15.95), QVector3D(0,-0.2,-1).normalized());
     CastResult* cr = new CastResult();
     unsigned char* ptr;
 
@@ -306,7 +307,7 @@ void RayTracer::render_worker()
         while(this->workTokens <= 0) pthread_cond_wait(&(this->workTokensCond), &(this->workTokensMux));
         this->workTokens--;
         pthread_mutex_unlock(&(this->workTokensMux));
-        qDebug() << "RayTracer.render_worker: Iteration Started.";
+        //qDebug() << "RayTracer.render_worker: Iteration Started.";
 
         while (this->nextPixel < (this->_height * this->_width))
         {   
@@ -316,8 +317,9 @@ void RayTracer::render_worker()
             x = pix % this->_width;
             y = (int)(pix / this->_width);
             ptr = this->renderData + (this->renderBPL*y) + (x*4);
-            qDebug() << "RayTracer.render_worker: Assigned Pixel: (" << x << ", " << y << ")";
+            //qDebug() << "RayTracer.render_worker: Assigned Pixel: (" << x << ", " << y << ")";
 
+            cr->reset();
             colour = getPixel(ray, cr, x, y);
             *(ptr++) = std::max(0.0, std::min(colour.x() * 255, 255.0));
             *(ptr++) = std::max(0.0, std::min(colour.y() * 255, 255.0));
@@ -349,29 +351,28 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
     /* this helper with fetch the colour of a pixel in the scene. */
     /* if there are to be expansions on rendering, such as jitter, it will 
     go in here */
-    qDebug() << "RayTracer.getPixel: Start";
-    return QVector3D(0.5, 0.5, 0.5);
+    //qDebug() << "RayTracer.getPixel: Start";
     QVector3D result;
-    //ray->setToPerspectiveRay(1, renderWidth, renderHeight, x, y);
-    ray->setToOrthographicRay(2.0, renderWidth, renderHeight, x, y);
-    qDebug() << "RayTracer.getPixel: Ray set, firing.";
+    ray->setToPerspectiveRay(2, renderWidth, renderHeight, x, y);
+    //ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
+    //qDebug() << "RayTracer.getPixel: Ray set, firing from (" << x << "," << y << "), from " << ray->origin << " @ " << ray->direction;
 
     if(this->sceneManager->cast_ray_into_scene(ray, cr))
     {
-        qDebug() << "RayTracer: Hit!";
+        //qDebug() << "RayTracer: Hit!";
         //If we have hit something that is ahead of our vision plane, use
         //the currently shader model to determine pixel colour.
-        //result += this->activeShader->getPixelColour(cr, this->sceneManager);
-        result += QVector3D(0.5, 0.5, 0.5);
+        result += this->activeShader->getPixelColour(cr, this->sceneManager);
+        //result += cr->subjectProperties->diffusionCoef;
     }
     else
     {
-        qDebug() << "RayTracer: Miss!";
+        //qDebug() << "RayTracer: Miss!";
         //We didn't hit anything in the scene! Use a background colour
         //of hot pink/magenta to indicate this, making it obvious.
         result += QVector3D(1.0,0.1137,0.8078);
     }
-    qDebug() << "Shader Stop";
+    //qDebug() << "Shader Result: " << result << " for (" << x << "," << y << ")";
     return result;
 }
 
