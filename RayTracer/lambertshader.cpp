@@ -12,14 +12,15 @@ QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 
 	/* Diffusion Component */
 	QVector3D diffusion(0,0,0);  //The light coeffecient returned is RGB channeled. 
-	Ray ray();
+    Ray ray;
 	CastResult* cr = new CastResult();
-	for(LightSource* light = scene->lights.begin(); light != scene->lights.end(); ++light)
+    for(std::vector<LightSource*>::iterator it = scene->lights.begin(); it != scene->lights.end(); ++it)
 	{
+        LightSource* light = (*it);
 		//If in shadow, do not add its intensity.
-		ray.set(cast->surfacePoint, light->getLightVector(cast->surfacePoint));
+        ray.set(cast->surfacePoint, light->getLightVector(cast->surfacePoint));
 		cr->reset();
-		if(scene->cast_ray_into_scene(ray, cr) && cr->subject != light->getObject())
+        if(scene->cast_ray_into_scene(ray, cr) && cr->subject != light->getObject())
 		{
 			//We hit something that was not the light. This generally indicates 
 			//a shadow, but, it can also mean there is a light source in front
@@ -27,10 +28,10 @@ QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 			//hitting it from behind, so it creates an effective shadow. 
 			
 		}
-		else if(cr->subject == light->getObject())
+        else if(cr->subject == light->getObject())
 		{
 			//Light hits the surface directly.
-			result += light->getLightProperties()->emissionCoef
+            diffusion += light->getLightProperties()->emission
 				* fmax(0, QVector3D::dotProduct(cast->surfaceNormal, light->getLightVector(cast->surfacePoint)));
 		}
 		else
@@ -43,6 +44,7 @@ QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 	//coeffecient to find out how much of it gets back to the camera. 
 	diffusion = diffusion * cast->subjectProperties->diffusionCoef;
 
+    QVector3D color;
 	//Add the components together. 
     color = ambient + diffusion;
 

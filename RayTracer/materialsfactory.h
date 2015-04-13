@@ -16,6 +16,7 @@
 class MaterialsFactory
 {
 
+public:
 /* As one may also find, google often points to the link below when
  * searching for 'raytracing materials' 
  * http://globe3d.sourceforge.net/g3d_html/gl-materials__ads.htm
@@ -61,26 +62,23 @@ enum MaterialType
 	RUBBER_BLACK */
 };
 
-public:
-	
-    static MaterialsFactory * instance;
-    SceneObjectProperties * materials[];
 
-    static MaterialsFactory * getInstance()
-    {
-        if(MaterialsFactory::instance == NULL)
-        {
-            MaterialsFactory::instance = new MaterialsFactory();
-        }
-        return MaterialsFactory::instance;
-    }
-
-    SceneObjectProperties* getMaterial(MaterialType type)
-    {
-        return MaterialsFactory::getInstance()->materials[type];
-    }
+    SceneObjectProperties ** materials;
 
     MaterialsFactory();
+
+    static MaterialsFactory& getInstance()
+    {
+        static MaterialsFactory instance;
+        return instance;
+    }
+
+    static SceneObjectProperties* getMaterial(MaterialType type)
+    {
+        return MaterialsFactory::getInstance().materials[type];
+    }
+
+
 
 };
 

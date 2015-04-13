@@ -10,9 +10,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "Main: Creating Ray Tracer";
     RayTracer rt = RayTracer();
     qDebug() << "Main: Rendering...";
-    QImage toDisplay = rt.render(this->ui->image->width(), this->ui->image->height());
+    //QImage toDisplay = rt.render(this->ui->image->width(), this->ui->image->height());
 
-    this->ui->image->setPixmap(QPixmap::fromImage(toDisplay));
+    //this->ui->image->setPixmap(QPixmap::fromImage(toDisplay));
 }
 
 MainWindow::~MainWindow()

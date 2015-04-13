@@ -4,17 +4,18 @@
  * 1m in radius, center positioned at the origin.
  */
 
- #ifndef SPHERE_H
- #define SPHERE_H
+#ifndef SPHERE_H
+#define SPHERE_H
 
- #include <QVector3D>
- #include <QMatrix4x4>
- #include <math.h>
- #include "sceneobject.h"
- #include "ray.h"
+#include <QVector3D>
+#include <QMatrix4x4>
+#include <math.h>
+#include "sceneobject.h"
+#include "ray.h"
+#include "primitive.h"
 
 
-class Sphere : public Primitive
+class Sphere : PrimitiveShape
 {
 public:
 	/** 

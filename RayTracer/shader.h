@@ -9,6 +9,7 @@
 #define SHADER_H
 
 #include <QVector3D>
+#include "scenemanager.h"
 #include "sceneobjectprops.h"
 #include "lightsource.h"
 #include "ray.h"
@@ -16,8 +17,6 @@
 class Shader
 {
 public:
-	Shader() { }
-
 	virtual QVector3D getPixelColour(CastResult* cast, SceneManager* scene) = 0;
 };
 

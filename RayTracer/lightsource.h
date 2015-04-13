@@ -10,12 +10,13 @@
 #include <QVector3D>
 #include "ray.h"
 #include "sphere.h"
+#include "scenegraphnode.h"
 
 class LightSource
 {
 public:
 	/** A 'standard' white light source at 0,10,0; */
-	LightSource(SceneGraphNode * source);
+    LightSource(SceneGraphNode* source);
     
     /* Perhaps later add this back wrapping a simple sphere/point source */
     //LightSource(QVector3D colour, QVector3D position, double intensity, double ambientIntensity);

@@ -19,7 +19,7 @@
 #include <unistd.h>
 #endif
 
-int getNumCores() {
+inline int getNumCores() {
 #ifdef WIN32
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);

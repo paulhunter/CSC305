@@ -26,7 +26,9 @@ SOURCES += main.cpp\
     castresult.cpp \
     plane.cpp \
     sceneobjectfactory.cpp \
-    materialsfactory.cpp
+    materialsfactory.cpp \
+    sceneobject.cpp \
+    shader.cpp
 
 HEADERS  += mainwindow.h \
     sphere.h \

@@ -2,6 +2,8 @@
 #ifndef EPSILON
 #define EPSILON 0.00001f
 
+#include "plane.h"
+
 Plane::Plane()
 {
 
@@ -20,14 +22,13 @@ double Plane::intersects(Ray ray, QMatrix4x4 transform)
 
 	 //Base plase is on the ground, and is a metre square,
 	 //centered on the origin.
-	 QVector3D a, b, c;
 	 QVector3D ap = transform * QVector3D(0.5, 0, 0.5);
 	 QVector3D bp = transform * QVector3D(0.5, 0, -0.5);
 	 QVector3D cp = transform * QVector3D(-0.5, 0, -0.5);
 
 	 double B, Y, t, M;
-	 double a,b,c,d,e,f,g,h,i,j,k,l;
-	 double ei_hf, gf_di, dh_eg, ak_jb, jc_al, bl_kc, 
+     double a,b,c,d,e,f,g,h,i,j,k,l;
+     double ei_hf, gf_di, dh_eg, ak_jb, jc_al, bl_kc;
 
 	 a = ap.x() - bp.x();
 	 b = ap.y() - bp.y();

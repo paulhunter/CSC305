@@ -2,9 +2,8 @@
 
 SceneObjectProperties::SceneObjectProperties()
 {
-    this->diffusionCeof = QVector3D(0.75, 0.75, 0.75);
+    this->diffusionCoef = QVector3D(0.75, 0.75, 0.75);
     this->specularCoef = QVector3D(0,0,0);
-    this->light = false;
 }
 
 SceneObjectProperties::SceneObjectProperties(
@@ -15,12 +14,12 @@ SceneObjectProperties::SceneObjectProperties(
 
 SceneObjectProperties::SceneObjectProperties(
 		QVector3D ambientCoef,
-		QVector3D diffusionCeof,
+        QVector3D diffusionCoef,
         QVector3D specularCoef, 
         double shininess)
 {
 	this->ambientCoef = ambientCoef;
-	this->diffusionCeof = diffusionCeof;
+    this->diffusionCoef = diffusionCoef;
 	this->specularCoef = specularCoef;
 	this->shininess = shininess;
 }

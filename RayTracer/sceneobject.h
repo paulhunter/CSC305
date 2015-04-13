@@ -11,12 +11,20 @@
 #include "ray.h"
 #include "primitive.h"
 
+class PrimitiveShape; //Forward Declaration - see primitive.h
+
 class SceneObject 
 {
 public: 
-    SceneObject() {}
+    SceneObject();
 
-    Primitive* primitive;
+    /* See primitive.h */
+    double intersects(Ray ray, QMatrix4x4 transform);
+
+    /* See primitive.h */
+    QVector3D getNormal(QVector3D p, QMatrix4x4 transform);
+
+    PrimitiveShape * primitive;
 
     /**
      * A local

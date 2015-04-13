@@ -1,10 +1,8 @@
 #include "lightsource.h"
 
-LightSource::LightSource(SceneGraphNode * source, double intensity, double ambientIntensity)
+LightSource::LightSource(SceneGraphNode * source)
 {
     this->source = source;
-    this->intensity = intensity;
-    this->ambientIntensity = ambientIntensity;
 }
 
 SceneObject * LightSource::getObject()
@@ -14,7 +12,7 @@ SceneObject * LightSource::getObject()
 
 SceneObjectProperties * LightSource::getLightProperties()
 {
-    return this->source->getMaterial();
+    return this->source->getSceneObjectProperties();
 }
 
 QVector3D LightSource::getLightVector(QVector3D surfacePoint)
@@ -23,7 +21,7 @@ QVector3D LightSource::getLightVector(QVector3D surfacePoint)
     //All object primitives have their geometric center on the 
     //origin in the basic model.
     QVector3D lightCenter(0,0,0); 
-    lightCenter = this->source->localTransform * lightCenter;
+    lightCenter = this->source->getSceneObject()->localTransform * lightCenter;
     return (lightCenter - surfacePoint).normalized();
 }
 

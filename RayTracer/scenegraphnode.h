@@ -25,7 +25,7 @@ public:
 	SceneObject *getSceneObject();
 
 	/** Retrieve the material of the primitive */
-	SceneObjectProperties *getSceneObjectProperties();
+    SceneObjectProperties * getSceneObjectProperties();
 
 	std::vector<SceneGraphNode*> children;
 
@@ -48,7 +48,7 @@ private:
 
 	SceneObject *sceneObject;
 
-	SceneObjectProperties *SceneObjectProperties;
+    SceneObjectProperties *sceneObjectProperties;
 };
 
 #endif

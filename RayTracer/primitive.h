@@ -6,9 +6,23 @@
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
 
-class Primtive
+#include <QMatrix4x4>
+#include <QVector3D>
+#include "ray.h"
+#include "sceneobject.h"
+
+class SceneObject; //Forward Declaration, see sceneobject.h
+
+class PrimitiveShape
 {
-	Primtive() {}
+public:
+
+    enum PrimtiveShapeType
+    {
+        SPHERE = 0, /* 1m Radius, Centered on Origin */
+        PLANE = 1 /* Default, Laying on XZ Plane */
+    };
+
 	/**
 	 * given a ray, find the t-value of the intersection within the geometry.
 	 * Returns the t value of the point on the geometry if it hits, 
@@ -20,7 +34,6 @@ class Primtive
 	 * get the normal vector from the point on the surface.
 	 */
 	virtual QVector3D getNormal(QVector3D point, QMatrix4x4 transform) = 0;
-
 };
 
 #endif

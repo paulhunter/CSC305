@@ -8,7 +8,7 @@
 SceneGraphNode::SceneGraphNode(SceneObject *object, SceneObjectProperties *material)
 {
     this->sceneObject = object;
-    this->SceneObjectProperties = material;
+    this->sceneObjectProperties = material;
 }
 
 SceneObject* SceneGraphNode::getSceneObject()
@@ -18,13 +18,13 @@ SceneObject* SceneGraphNode::getSceneObject()
 
 SceneObjectProperties* SceneGraphNode::getSceneObjectProperties()
 {
-	return this->SceneObjectProperties;
+    return this->sceneObjectProperties;
 }
 
 bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
 {
     double r = -1;
-    transform = ths->sceneObject->localTransform * transform;
+    transform = this->sceneObject->localTransform * transform;
     if(this->sceneObject != NULL)
     {
         r = this->sceneObject->intersects(ray, transform);
@@ -32,7 +32,7 @@ bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
             (result->t < 0 || r < result->t))
         {
             result->subject = this->sceneObject;
-            result->subjectProperties = this->SceneObjectProperties;
+            result->subjectProperties = this->sceneObjectProperties;
             result->t = r;
             result->surfacePoint = ray.origin + r*ray.direction;
             result->surfaceNormal = this->sceneObject->getNormal(result->surfacePoint, transform);

@@ -2,14 +2,15 @@
 
 MaterialsFactory::MaterialsFactory()
 {
-    this->materials = {
+    this->materials = new SceneObjectProperties*[GREY_LIGHT_FLAT+1];
+    this->materials[0] =
         //DEFAULT
         new SceneObjectProperties(
             QVector3D(0.2,0.2,0.2), //AMBIENT
             QVector3D(0.8,0.8,0.8), //DIFFUSE
             QVector3D(0.0, 0.0, 0.0), //SPECULAR
-            0), //SHININESS
-
+            0); //SHININESS
+    /*
         //LIGHT_WHITE
         new SceneObjectProperties(QVector3D(1.0, 1.0, 1.0)),
 
@@ -80,7 +81,7 @@ MaterialsFactory::MaterialsFactory()
             QVector3D(0.0225, 0.0225, 0.0225), //SPECULAR
             12.8) //SHININESS
 
-
+*/
         //GLASS,
         //BRASS,
         //BRONZE,
@@ -102,5 +103,4 @@ MaterialsFactory::MaterialsFactory()
         //PLASTIC_BLACK,
         //RUBBER_BLACK
 
-        };
 }

@@ -7,6 +7,9 @@
 #ifndef PLANE_H
 #define PLANE_H
 
+#include "primitive.h"
+#include <math.h>
+
 class Plane : public SceneObject
 {
 public:

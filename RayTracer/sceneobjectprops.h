@@ -14,6 +14,8 @@
 class SceneObjectProperties
 {
 public:
+    SceneObjectProperties();
+
 	/* Create a light source */
 	SceneObjectProperties(
 		QVector3D emission);
@@ -25,7 +27,7 @@ public:
         QVector3D specularCoef,
         double shininess);
 
-	QVector3D emisison; //Light Source colou.
+    QVector3D emission; //Light Source colou.
 	QVector3D ambientCoef; //Ambient Surface Colour
 	QVector3D diffusionCoef; //Surface Colour
 	QVector3D specularCoef;//Reflectance Colour
