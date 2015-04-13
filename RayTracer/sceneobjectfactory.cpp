@@ -10,7 +10,7 @@ SceneObjectFactory::SceneObjectFactory()
 SceneObject* SceneObjectFactory::createSceneObject(PrimitiveShape::PrimtiveShapeType type, QVector3D position)
 {
 	SceneObject* result = new SceneObject();
-    result->primitive = this->getPrimitive(type);
+    result->type = type;
     result->localTransform.translate(position);
 	return result;
 }
@@ -19,7 +19,7 @@ SceneObject* SceneObjectFactory::createSceneObject_wScaleRot(PrimitiveShape::Pri
 	QVector3D position, double scale, double x, double y, double z)
 {
 	SceneObject* result = new SceneObject();
-    result->primitive = this->getPrimitive(type);
+    result->type = type;
     result->localTransform.scale(scale);
     result->localTransform.rotate(x, 1,0,0);
     result->localTransform.rotate(y, 0,1,0);
@@ -32,7 +32,7 @@ SceneObject* SceneObjectFactory::createSceneObject_wScale(PrimitiveShape::Primti
 	QVector3D position, double scale)
 {
 	SceneObject* result = new SceneObject();
-    result->primitive = this->getPrimitive(type);
+    result->type = type;
     result->localTransform.scale(scale);
     result->localTransform.translate(position);
     return result;
@@ -42,7 +42,7 @@ SceneObject* SceneObjectFactory::createSceneObject_wRot(PrimitiveShape::Primtive
 	QVector3D position, double x, double y, double z)
 {
 	SceneObject* result = new SceneObject();
-    result->primitive = this->getPrimitive(type);
+    result->type = type;
     result->localTransform.rotate(x, 1,0,0);
     result->localTransform.rotate(y, 0,1,0);
     result->localTransform.rotate(z, 0,0,1);

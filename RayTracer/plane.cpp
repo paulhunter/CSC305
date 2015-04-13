@@ -3,6 +3,7 @@
 #define EPSILON 0.00001f
 
 #include "plane.h"
+#include "sceneobject.h"
 
 Plane::Plane()
 {
@@ -22,9 +23,10 @@ double Plane::intersects(Ray *ray, QMatrix4x4 transform)
 
 	 //Base plase is on the ground, and is a metre square,
 	 //centered on the origin.
-	 QVector3D ap = transform * QVector3D(0.5, 0, 0.5);
-	 QVector3D bp = transform * QVector3D(0.5, 0, -0.5);
-	 QVector3D cp = transform * QVector3D(-0.5, 0, -0.5);
+     QVector3D ap = transform * QVector3D(0.0, 0, 0);
+     QVector3D bp = transform * QVector3D(1, 0, 0);
+     QVector3D cp = transform * QVector3D(0, 0, 1);
+     //qDebug() << "Plane: Transformed O: " << ap << " A:" << bp << " B:" << cp;
 
 	 double B, Y, t, M;
      double a,b,c,d,e,f,g,h,i,j,k,l;
@@ -53,7 +55,7 @@ double Plane::intersects(Ray *ray, QMatrix4x4 transform)
 	 M = a*ei_hf + b*gf_di + c*dh_eg;
 	 if (fabs(M) < EPSILON)
 	 {
-	 	return -1;
+        t = -1;
 	 } 
 	 else
 	 {
@@ -68,10 +70,12 @@ double Plane::intersects(Ray *ray, QMatrix4x4 transform)
 	 Y = i*ak_jb + e*jc_al + d*bl_kc;
 	 Y = Y / M;
 	 */
+     //qDebug() << "Plane.intersect: Ray: " << ray->direction << " from " << ray->origin << ", Plane: " << (bp-ap).normalized() << " x " << (cp-ap).normalized() << ". t: " << t;
+
     return t;
 }
 
-QVector3D getNormal(QVector3D p, QMatrix4x4 transform)
+QVector3D Plane::getNormal(QVector3D p, QMatrix4x4 transform)
 {
 	QVector3D o = transform * QVector3D(0,0,0);
 	QVector3D a = transform * QVector3D(0.5,0,0);

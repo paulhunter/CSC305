@@ -9,9 +9,6 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 #include "ray.h"
-#include "sceneobject.h"
-
-class SceneObject; //Forward Declaration, see sceneobject.h
 
 class PrimitiveShape
 {

@@ -10,7 +10,7 @@
 #include "primitive.h"
 #include <math.h>
 
-class Plane : public SceneObject
+class Plane : public PrimitiveShape
 {
 public:
 	/** 

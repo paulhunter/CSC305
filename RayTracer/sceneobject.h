@@ -10,6 +10,7 @@
 
 #include "ray.h"
 #include "primitive.h"
+#include "sceneobjectfactory.h"
 
 class PrimitiveShape; //Forward Declaration - see primitive.h
 
@@ -24,7 +25,7 @@ public:
     /* See primitive.h */
     QVector3D getNormal(QVector3D p, QMatrix4x4 transform);
 
-    PrimitiveShape * primitive;
+    PrimitiveShape::PrimtiveShapeType type;
 
     /**
      * A local

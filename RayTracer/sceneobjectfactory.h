@@ -16,6 +16,8 @@
 #include "plane.h"
 #include "primitive.h"
 
+class SceneObject;
+
 class SceneObjectFactory
 {
 public: 
@@ -43,10 +45,12 @@ public:
 	 * axes, in that order, finally translating it to the position */
     SceneObject* createSceneObject_wScaleRot(PrimitiveShape::PrimtiveShapeType type, QVector3D position, double scale, double x, double y, double z);
 
+    /* Retrieve the single instance of a given primive from memory */
+    PrimitiveShape * getPrimitive(PrimitiveShape::PrimtiveShapeType type);
+
 private:
 
-	/* Retrieve the single instance of a given primive from memory */
-    PrimitiveShape * getPrimitive(PrimitiveShape::PrimtiveShapeType type);
+
 
 };
 
