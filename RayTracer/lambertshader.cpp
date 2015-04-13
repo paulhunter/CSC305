@@ -7,8 +7,8 @@ LambertShader::LambertShader()
 
 QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 {
-	/* Ambient Component - Dummy lighting value of 0.3 */
-	QVector3D ambient = 0.3 * cast->subjectProperties->ambientCoef;
+	/* Ambient Component - Dummy lighting value of 0.005 */
+	QVector3D ambient = 0.005 * cast->subjectProperties->ambientCoef;
 
 	/* Diffusion Component */
 	QVector3D diffusion(0,0,0);  //The light coeffecient returned is RGB channeled. 
@@ -30,7 +30,7 @@ QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 		else if(cr->subject == light->getObject())
 		{
 			//Light hits the surface directly.
-			result += light->intensity * light->getLightProperties()->diffusionCoef 
+			result += light->getLightProperties()->emissionCoef
 				* fmax(0, QVector3D::dotProduct(cast->surfaceNormal, light->getLightVector(cast->surfacePoint)));
 		}
 		else
