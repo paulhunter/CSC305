@@ -72,9 +72,9 @@ double Plane::intersects(Ray ray, QMatrix4x4 transform)
 
 QVector3D getNormal(QVector3D p, QMatrix4x4 transform)
 {
-	QVector3D o = transform * QVector3D(1,0,0);
+	QVector3D o = transform * QVector3D(0.5,0,0);
 	QVector3D a = transform * QVector3D(0,0,0);
-	QVector3D b = transform * QVector3D(0,0,1);
+	QVector3D b = transform * QVector3D(0,0,0.5);
 	return QVector3D::crossProduct(
 		(a-o).normalized(),
 		(b-o).normalized()).normalized();
