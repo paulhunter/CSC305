@@ -18,9 +18,6 @@ void SceneManager::add_lightSource(SceneObject* obj, SceneObjectProperties* mate
 	this->lights.push_back(new LightSource(light));
 }
 
-
-
-
 bool SceneManager::cast_ray_into_scene(Ray ray, CastResult *result)
 {
 	return this->root->castRay(ray, QMatrix4x4(), result);

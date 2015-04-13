@@ -41,9 +41,6 @@ public:
 	 * object after use */
 	void add_lightSource(SceneObject* obj, ObjectMaterial* material);
 
-	/* Add a new light with a specified intensity. */
-	void add_lightSource(SceneObject* obj, ObjectMaterial* material);
-
 	/* Utilities */
 	/* Cast a ray into the scene, returning the results of the
 	 * collision in the provided and previously allocated
@@ -56,8 +53,6 @@ private:
 	
 	SceneGraphNode *root;
 	
-
-
 };
 
 
