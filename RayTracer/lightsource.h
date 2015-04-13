@@ -8,8 +8,8 @@
 #define LIGHTSOURCE_H
 
 #include <QVector3D>
-#include <ray.h>
-#include <sphere.h>
+#include "ray.h"
+#include "sphere.h"
 
 class LightSource
 {
