@@ -26,6 +26,8 @@ enum MaterialType
     DEFAULT,
 
 	LIGHT_WHITE,
+    LIGHT_RED,
+    LIGHT_BLUE,
 
 	RED_FLAT,
 	ORANGE_FLAT,

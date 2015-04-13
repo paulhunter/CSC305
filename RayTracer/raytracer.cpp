@@ -23,15 +23,15 @@ RayTracer::RayTracer()
 	this->sceneManager = new SceneManager();
 
     /*Shiny Big Sphere */
-    SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(-2.5,5,-2.5), 4); //QVector3D(0, 5, -5), 2);
+    SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0,0,0), 3); //QVector3D(0, 5, -5), 2);
     this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
 
     /* Orange Back Sphere */
-    SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(2.5, 3, -2.5), 2.5);
+    SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 6, 0), 2);
     this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(MaterialsFactory::ORANGE_FLAT));
 
     /* Copper front sphere */ //Currently yellow
-    SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(2.5, 1.5, 0), 1.0);
+    SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(-3, 6, -3), 1.0);
     this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(MaterialsFactory::YELLOW_FLAT));
 
     /* Ground Plane */
@@ -51,8 +51,11 @@ RayTracer::RayTracer()
     //this->sceneManager->add_sceneObject(backWall, MaterialsFactory::getMaterial(MaterialsFactory::GREEN_FLAT));
 
     /* White Corner Scene Light */
-    SceneObject* sceneLight = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(10, 10, 5));
+    SceneObject* sceneLight = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 9, 0), 3);
     this->sceneManager->add_lightSource(sceneLight, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
+
+    SceneObject* sceneLight2 = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(3, 6, 0));
+    this->sceneManager->add_lightSource(sceneLight2, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_RED));
     // END OF SCENE CREATION
 
     this->activeShader = new LambertShader();
@@ -290,7 +293,7 @@ void RayTracer::render_worker()
     QVector3D colour;
     // TODO: CAMERA CONTROLS
     //Look from the 
-    Ray* ray = new Ray(QVector3D(0,5,40), QVector3D(0,0,-1).normalized());
+    Ray* ray = new Ray(QVector3D(0,20,20), (-QVector3D(0,12,20)).normalized());
     //Ray* ray = new Ray(QVector3D(0,5,15.95), QVector3D(0,-0.2,-1).normalized());
     CastResult* cr = new CastResult();
     unsigned char* ptr;
@@ -353,8 +356,8 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
     go in here */
     //qDebug() << "RayTracer.getPixel: Start";
     QVector3D result;
-    ray->setToPerspectiveRay(2, renderWidth, renderHeight, x, y);
-    //ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
+    //ray->setToPerspectiveRay(4, renderWidth, renderHeight, x, y);
+    ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
     //qDebug() << "RayTracer.getPixel: Ray set, firing from (" << x << "," << y << "), from " << ray->origin << " @ " << ray->direction;
 
     if(this->sceneManager->cast_ray_into_scene(ray, cr))
@@ -370,7 +373,7 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
         //qDebug() << "RayTracer: Miss!";
         //We didn't hit anything in the scene! Use a background colour
         //of hot pink/magenta to indicate this, making it obvious.
-        result += QVector3D(1.0,0.1137,0.8078);
+        result += QVector3D(0.3,0.3,0.3);
     }
     //qDebug() << "Shader Result: " << result << " for (" << x << "," << y << ")";
     return result;

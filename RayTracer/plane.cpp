@@ -68,7 +68,7 @@ double Plane::intersects(Ray *ray, QMatrix4x4 transform)
 	 Y = i*ak_jb + e*jc_al + d*bl_kc;
 	 Y = Y / M;
 	 */
-
+    return t;
 }
 
 QVector3D getNormal(QVector3D p, QMatrix4x4 transform)

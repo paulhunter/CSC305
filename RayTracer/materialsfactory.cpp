@@ -15,6 +15,10 @@ MaterialsFactory::MaterialsFactory()
         //LIGHT_WHITE
     this->materials[LIGHT_WHITE] = new SceneObjectProperties(QVector3D(1.0, 1.0, 1.0)),
 
+    this->materials[LIGHT_RED] = new SceneObjectProperties(QVector3D(1.0, 0, 0)),
+
+    this->materials[LIGHT_BLUE] = new SceneObjectProperties(QVector3D(0, 0, 1)),
+
         //RED_FLAT,
     this->materials[RED_FLAT] = new SceneObjectProperties(
             QVector3D(0,0,0), //AMBIENT
