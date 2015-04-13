@@ -30,9 +30,15 @@ public:
 	/* Create a basic object at the given position in space. */
 	static SceneObject* createSceneObject(PrimitiveType type, QVector3D position);
 
+	/* Create a scaled primitive at the given position in space .*/
+	static SceneObject* createSceneObject_wScale(PrimitiveType type, QVector3D position, double scale);
+
+	/* Create a rotated primitive with original scale */
+	static SceneObject* createSceneObject_wRot(PrimitiveType type, QVector3D position, double x, double y, double z);
+
 	/* Create a primitive, scale it by a factor, rotate it about the x, y, z
 	 * axes, in that order, finally translating it to the position */
-	static SceneObject* createSceneObject_wRot(PrimitiveType type, QVector3D position, double scale, double x, double y, double z);
+	static SceneObject* createSceneObject_wScaleRot(PrimitiveType type, QVector3D position, double scale, double x, double y, double z);
 
 private:
 
