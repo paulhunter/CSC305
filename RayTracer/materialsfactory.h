@@ -23,6 +23,9 @@ class MaterialsFactory
 enum MaterialType
 {
 	DEFAULT
+
+	LIGHT_WHITE,
+
 	RED_FLAT,
 	ORANGE_FLAT,
 	YELLOW_FLAT,
@@ -63,8 +66,18 @@ public:
 		return materials[type];
 	}
 private:
-	//DEFAULT
+	
 	SceneObjectProperties* materials[] = new {
+	//DEFAULT
+	new SceneObjectProperties(
+		QVector3D(0.2,0.2,0.2), //AMBIENT
+		QVector3D(0.8,0.8,0.8), //DIFFUSE
+		QVector3D(0.0, 0.0, 0.0), //SPECULAR
+		0), //SHININESS
+
+	//LIGHT_WHITE
+	new SceneObjectProperties(QVector3D(1.0, 1.0, 1.0)),
+
 	//RED_FLAT,
 	new SceneObjectProperties(
 		QVector3D(0,0,0), //AMBIENT
