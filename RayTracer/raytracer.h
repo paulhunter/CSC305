@@ -10,9 +10,7 @@
 #define RAYTRACER_H
 
 #include <time.h>
-#include <thread>
-#include <mutex.h>
-#include <condition_variable.hd>
+#include <pthread.h>
 
 #include <ray.h>
 #include "shader.h"
@@ -22,7 +20,6 @@
 #include "lambertshader.h"
 
 #include "lightsource.h"
-#include "utils.h"
 #include <scenemanager.h>
 #include <QImage>
 
@@ -35,7 +32,13 @@ class RayTracer
 {
 public:
 	RayTracer();
-	QImage render(int width, int height);
+    /* Resolution change, not screen size */
+    void setRenderSize(int width, int height);
+
+    /* Max 16 */
+    void setWorkerCount(int count);
+
+
 	SceneManager *sceneManager;
 
 	Shader* activeShader;
@@ -59,7 +62,7 @@ private:
 	// internals versions which start with an underscore. 
 	volatile int renderWidth, renderHeight, renderThreadCount;
 	volatile int _width, _height, _workerCount;
-	std::mutex managedInterfaceLock;
+    pthread_mutex_t managedInterfaceLock;
 	// Internals. 
 
 	//Dirty Flags are used to indicate changes in the settings of the render
@@ -70,12 +73,12 @@ private:
 	// 0x8000 - Exit
 	volatile uint dirtyFlags;
 	volatile uint nextPixel;
-	std::thread* master;
-	std::vector<std::thread *> workers;
-	volatile uint workTokens;
-	//Conditional Variables requires a Mutex to lock on. 
-	std::condition_variable workSema;
-	std::mutex workSemaMux;
+    pthread_t master;
+    pthread_t* workers;
+    pthread_attr_t workerAttr;
+    volatile int workTokens;
+    pthread_cond_t workTokensCond;
+    pthread_mutex_t workTokensMux;
 
 	
 	//Render Frame Data
@@ -86,6 +89,16 @@ private:
 
 	//TEMPORARY
 	double cameraFocalLength;
+
+    /* The the active shader and other techniques to calculate the colour
+     * of pixel x,y on the screen */
+    QVector3D getPixel(Ray* ray, CastResult* cr, int x, int y);
+
+    void render_reconfigure();
+    void render_master();
+    static void* render_worker_dummy(void * ptr);
+    void render_worker();
+
 };
 
 #endif
