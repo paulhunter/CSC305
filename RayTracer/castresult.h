@@ -11,7 +11,7 @@
 #define CASTRESULT_H
 
 #include <QVector3D>
-#include <scenegraphnode.h>
+#include "scenegraphnode.h"
 
 class SceneGraphNode;
 
