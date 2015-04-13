@@ -26,12 +26,12 @@ Ray::Ray(QVector3D eyePos, QVector3D direction)
 	this->v = QVector3D::crossProduct(w,u).normalized();
 }
 
-void Ray::setToOrthographicRay(double focalLength, double screenWidth, double screenHeight, 
+void Ray::setToOrthographicRay(double scale, double screenWidth, double screenHeight, 
 		double i, double j)
 {
 	double midu = ((-screenWidth/2.0) + (i + 0.5)) / screenWidth;
     double midv = ((screenHeight/2.0) - (j - 0.5)) / screenHeight;
-	this->origin = this->eyePos + (midu * u) + (midv * v);
+	this->origin = this->eyePos + (scale*midu * u) + (scale*midv * v);
     this->direction = -w; //Our direction vector becomes the length of the 
     //hypothetical lens from the sensor.
 }
@@ -42,7 +42,8 @@ void Ray::setToPerspectiveRay(double focalLength, double screenWidth, double scr
 	double midu = ((-screenWidth/2.0) + (i + 0.5)) / screenWidth;
 	double midv = ((screenHeight/2.0) - (j - 0.5)) / screenHeight;
 	this->origin = this->eyePos + (midu * u) + (midv * v);
-	this->direction = ((-w*(focalLength/1000.0)) + (midu * u) + (midv * v)).normalized();
+	this->direction = ((-w*(0.5)) + (midu * u) + (midv * v)).normalized();
+	//Hard coded for the moment. 
 }
 
 QVector3D Ray::getPoint(double t)
