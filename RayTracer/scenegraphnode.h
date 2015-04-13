@@ -25,9 +25,7 @@ public:
 	SceneObject *getSceneObject();
 
 	/** Retrieve the material of the primitive */
-	SceneObjectProperties *getMaterial();
-
-	QMatrix4x4 localTransform;
+	SceneObjectProperties *getSceneObjectProperties();
 
 	std::vector<SceneGraphNode*> children;
 
@@ -48,7 +46,7 @@ private:
 
 	SceneObject *sceneObject;
 
-	SceneObjectProperties *material;
+	SceneObjectProperties *SceneObjectProperties;
 };
 
 #endif

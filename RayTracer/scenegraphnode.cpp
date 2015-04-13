@@ -8,7 +8,7 @@
 SceneGraphNode::SceneGraphNode(SceneObject *object, SceneObjectProperties *material)
 {
     this->sceneObject = object;
-    this->material = material;
+    this->SceneObjectProperties = material;
 }
 
 SceneObject* SceneGraphNode::getSceneObject()
@@ -16,9 +16,9 @@ SceneObject* SceneGraphNode::getSceneObject()
 	return this->sceneObject;
 }
 
-SceneObjectProperties* SceneGraphNode::getMaterial()
+SceneObjectProperties* SceneGraphNode::getSceneObjectProperties()
 {
-	return this->material;
+	return this->SceneObjectProperties;
 }
 
 bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
@@ -39,7 +39,7 @@ bool SceneGraphNode::castRay(Ray ray, QMatrix4x4 transform, CastResult *result)
             //As we discussed in class, the 'Black Plague' occurs when points on a surface are
             //calculated and as a result of precision errors it ends up calculated as behind
             //the surface. The solution is to move 0.1mm off the surface using the normal vector. 
-            result->surfacePoint = EPSILON * result->surfaceNormal;
+            result->surfacePoint += EPSILON * result->surfaceNormal;
         }
     }
 
