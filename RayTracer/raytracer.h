@@ -88,6 +88,10 @@ private:
 	volatile uint renderBPL; //Bytes per line.
 	//Last rendered image.
 
+    //Sampling resolution grid, 2 = 4 samples, 3 = 9 sample, etc.
+    int sampleSize;
+    std::vector<double> jitterValues;
+
 
 	//TEMPORARY
 	double cameraFocalLength;
