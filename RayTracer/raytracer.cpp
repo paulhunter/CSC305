@@ -11,6 +11,7 @@
 #include "unistd.h"
 
 #define MAX_THREADS_P 16
+#define SAMPLE_SIZE 5
 
 RayTracer::RayTracer()
 {
@@ -56,6 +57,12 @@ RayTracer::RayTracer()
     // END OF SCENE CREATION
 
     this->activeShader = new LambertShader();
+
+    this->sampleResolution = SAMPLE_SIZE;
+    for(int i = 0; i < this->sampleResolution*this->sampleResolution; i++)
+    {
+        this->jitterValues.push_back((double)std::rand()/RAND_MAX);
+    }
 
     //Multi-Threading Infomation
     //Setup the control mechanisms.
@@ -354,25 +361,39 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
     go in here */
     //qDebug() << "RayTracer.getPixel: Start";
     QVector3D result;
-    ray->setToPerspectiveRay(2, renderWidth, renderHeight, x, y);
-    //ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
-    //qDebug() << "RayTracer.getPixel: Ray set, firing from (" << x << "," << y << "), from " << ray->origin << " @ " << ray->direction;
 
-    if(this->sceneManager->cast_ray_into_scene(ray, cr))
+
+    //qDebug() << "RayTracer.getPixel: Ray set, firing from (" << x << "," << y << "), from " << ray->origin << " @ " << ray->direction;
+    for(int i = 0; i < this->sampleResolution; i++)
     {
-        //qDebug() << "RayTracer: Hit!";
-        //If we have hit something that is ahead of our vision plane, use
-        //the currently shader model to determine pixel colour.
-        result += this->activeShader->getPixelColour(cr, this->sceneManager);
-        //result += cr->subjectProperties->diffusionCoef;
+        for(int j = 0; j < this->sampleResolution; j++)
+        {
+            x = x + ((i+this->jitterValues[i+j])/this->sampleResolution);
+            y = y + ((j+this->jitterValues[i+j])/this->sampleResolution);
+            ray->setToPerspectiveRay(2, renderWidth, renderHeight, x, y);
+            //ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
+            cr->reset();
+
+            if(this->sceneManager->cast_ray_into_scene(ray, cr))
+            {
+                //qDebug() << "RayTracer: Hit!";
+                //If we have hit something that is ahead of our vision plane, use
+                //the currently shader model to determine pixel colour.
+                result += this->activeShader->getPixelColour(cr, this->sceneManager);
+                //result += cr->subjectProperties->diffusionCoef;
+            }
+            else
+            {
+                //qDebug() << "RayTracer: Miss!";
+                //We didn't hit anything in the scene! Use a background colour
+                //of hot pink/magenta to indicate this, making it obvious.
+                result += QVector3D(0.3,0.3,0.3);
+            }
+        }
     }
-    else
-    {
-        //qDebug() << "RayTracer: Miss!";
-        //We didn't hit anything in the scene! Use a background colour
-        //of hot pink/magenta to indicate this, making it obvious.
-        result += QVector3D(0.3,0.3,0.3);
-    }
+
+    result /= this->sampleResolution * this->sampleResolution; //Total number of samples, easy opti.
+
     //qDebug() << "Shader Result: " << result << " for (" << x << "," << y << ")";
     return result;
 }

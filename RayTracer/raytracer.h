@@ -88,8 +88,12 @@ private:
 	volatile uint renderBPL; //Bytes per line.
 	//Last rendered image.
 
+    //Anti-Aliasing
+    //Jitter is used as the technique to collect multiple samples from a pixel on
+    //the screen. Numbers are generated randomly at the instantiation of the
+    //ray tracer and used throughout the application.
     //Sampling resolution grid, 2 = 4 samples, 3 = 9 sample, etc.
-    int sampleSize;
+    int sampleResolution;
     std::vector<double> jitterValues;
 
 
