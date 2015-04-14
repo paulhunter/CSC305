@@ -7,8 +7,8 @@ LambertShader::LambertShader()
 
 QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
 {
-    qDebug() << "Lambert Shader Start";
-    return QVector3D();
+    //qDebug() << "Lambert Shader Start";
+
 	/* Ambient Component - Dummy lighting value of 0.005 */
     QVector3D ambient = 0.05 * cast->subjectProperties->ambientCoef;
 

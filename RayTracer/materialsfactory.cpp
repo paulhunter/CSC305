@@ -13,11 +13,11 @@ MaterialsFactory::MaterialsFactory()
             0); //SHININESS
 
         //LIGHT_WHITE
-    this->materials[LIGHT_WHITE] = new SceneObjectProperties(QVector3D(1.0, 1.0, 1.0)),
+    this->materials[LIGHT_WHITE] = new SceneObjectProperties(QVector3D(0.3, 0.3, 0.3)),
 
-    this->materials[LIGHT_RED] = new SceneObjectProperties(QVector3D(1.0, 0, 0)),
+    this->materials[LIGHT_RED] = new SceneObjectProperties(QVector3D(0.3, 0, 0)),
 
-    this->materials[LIGHT_BLUE] = new SceneObjectProperties(QVector3D(0, 0, 1)),
+    this->materials[LIGHT_BLUE] = new SceneObjectProperties(QVector3D(0, 0, 0.3)),
 
         //RED_FLAT,
     this->materials[RED_FLAT] = new SceneObjectProperties(
