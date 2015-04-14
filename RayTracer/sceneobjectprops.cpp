@@ -16,10 +16,12 @@ SceneObjectProperties::SceneObjectProperties(
 		QVector3D ambientCoef,
         QVector3D diffusionCoef,
         QVector3D specularCoef, 
-        double shininess)
+        double shininess,
+        double mirrorFactor)
 {
 	this->ambientCoef = ambientCoef;
     this->diffusionCoef = diffusionCoef;
 	this->specularCoef = specularCoef;
 	this->shininess = shininess;
+    this->mirrorFactor = mirrorFactor;
 }

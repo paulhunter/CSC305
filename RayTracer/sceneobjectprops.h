@@ -18,21 +18,22 @@ public:
 
 	/* Create a light source */
 	SceneObjectProperties(
-		QVector3D emission);
+        QVector3D emission);
 	
 	/* Create a material */
 	SceneObjectProperties(
 		QVector3D ambientCoef,
 		QVector3D diffusionCeof,
         QVector3D specularCoef,
-        double shininess);
+        double shininess,
+        double mirrorFactor = 0.0);
 
     QVector3D emission; //Light Source colou.
 	QVector3D ambientCoef; //Ambient Surface Colour
 	QVector3D diffusionCoef; //Surface Colour
 	QVector3D specularCoef;//Reflectance Colour
-	double shininess; //Specular power 0-128
-
+    double shininess; //Specular power 0-128
+    double mirrorFactor; //0-1, %of light contributed by the reflection.
 };
 
 

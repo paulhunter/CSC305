@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     sceneobjectfactory.cpp \
     materialsfactory.cpp \
     sceneobject.cpp \
-    shader.cpp
+    shader.cpp \
+    bpfshader.cpp
 
 HEADERS  += mainwindow.h \
     sphere.h \
@@ -46,6 +47,7 @@ HEADERS  += mainwindow.h \
     sceneobjectfactory.h \
     materialsfactory.h \
     utils.h \
-    primitive.h
+    primitive.h \
+    bpfshader.h
 
 FORMS    += mainwindow.ui

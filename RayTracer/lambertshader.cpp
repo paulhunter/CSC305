@@ -5,7 +5,7 @@ LambertShader::LambertShader()
 
 }
 
-QVector3D LambertShader::getPixelColour(CastResult* cast, SceneManager* scene)
+QVector3D LambertShader::getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene)
 {
     //qDebug() << "Lambert Shader Start";
 

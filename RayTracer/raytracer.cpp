@@ -379,7 +379,7 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
                 //qDebug() << "RayTracer: Hit!";
                 //If we have hit something that is ahead of our vision plane, use
                 //the currently shader model to determine pixel colour.
-                result += this->activeShader->getPixelColour(cr, this->sceneManager);
+                result += this->activeShader->getPixelColour(ray, cr, this->sceneManager);
                 //result += cr->subjectProperties->diffusionCoef;
             }
             else

@@ -17,7 +17,7 @@
 class Shader
 {
 public:
-	virtual QVector3D getPixelColour(CastResult* cast, SceneManager* scene) = 0;
+    virtual QVector3D getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene) = 0;
 };
 
 
