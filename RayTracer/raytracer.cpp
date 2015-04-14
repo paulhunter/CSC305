@@ -79,7 +79,7 @@ RayTracer::RayTracer()
     this->dirtyFlags = 0x0000; 
     this->renderData = NULL;
     this->setWorkerCount(MAX_THREADS_P);
-    this->setRenderSize(400, 400);
+    this->setRenderSize(600, 600);
 
     this->workTokens = 0;
     
@@ -230,10 +230,7 @@ void RayTracer::render_master()
         //all of them and let them fight for a token.
         pthread_cond_broadcast(&(this->workTokensCond));
         pthread_mutex_unlock(&(this->workTokensMux));
-        usleep(1000000);
         qDebug() << "RayTracer: Tokens Sent.";
-
-
 
         //At this point, each otherkers has been placed in a ready state to try for
         //the lock on the work mutex. As they wake and each will decriment the work 
@@ -254,7 +251,7 @@ void RayTracer::render_master()
         pthread_mutex_unlock(&(this->workTokensMux)); //The lock would go out of scope and unlock at the end of the iteration
                          //but i dont think we need to hang on to it past this point.
 
-        //qDebug() << "RayTracer: Render Complete (" << clock() - start << " seconds).";
+        qDebug() << "RayTracer: Render Complete (" << (clock() - (double)start) / CLOCKS_PER_SEC << " seconds).";
 
         //TODO: Send signal to repaint the image. I'm interested to see if there is any issue given
         //      the operations of changing colours are mostly atomic. Some pixels perhaps will have
