@@ -97,13 +97,12 @@ private:
     int sampleResolution;
     std::vector<double> jitterValues;
 
-
-	//TEMPORARY
+    //TEMPORARY - Will Migrate to CameraManager eventually
 	double cameraFocalLength;
 
     /* The the active shader and other techniques to calculate the colour
      * of pixel x,y on the screen */
-    QVector3D getPixel(Ray* ray, CastResult* cr, int x, int y);
+    QVector3D getPixel(Ray* ray, CastResult* cr, double x, double y);
 
     void render_reconfigure();
     static void* render_master_dummy(void * ptr);

@@ -11,7 +11,7 @@
 #include "unistd.h"
 
 #define MAX_THREADS_P 16
-#define SAMPLE_SIZE 1
+#define SAMPLE_SIZE 2
 
 RayTracer::RayTracer()
 {
@@ -62,7 +62,7 @@ RayTracer::RayTracer()
     this->sampleResolution = SAMPLE_SIZE;
     for(int i = 0; i < this->sampleResolution*2; i++)
     {
-        this->jitterValues.push_back(((double)std::rand())/RAND_MAX);
+        this->jitterValues.push_back(((double)std::rand())/(RAND_MAX));
     }
 
     //Multi-Threading Infomation
@@ -355,7 +355,7 @@ void RayTracer::render_worker()
 
 }
 
-QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
+QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, double x, double y)
 {
     /* this helper with fetch the colour of a pixel in the scene. */
     /* if there are to be expansions on rendering, such as jitter, it will 
@@ -365,12 +365,15 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
 
 
     //qDebug() << "RayTracer.getPixel: Ray set, firing from (" << x << "," << y << "), from " << ray->origin << " @ " << ray->direction;
+    int goodSamples = 0;
+    //We use a good samples counter at the moment because the scene is not complete, several reflections
+    // in a single shader calculation can cause it to just be washed out with the neutral default grey.
     for(int i = 0; i < this->sampleResolution; i++)
     {
         for(int j = 0; j < this->sampleResolution; j++)
         {
-            x = x;// + ((i+this->jitterValues[i+j])/this->sampleResolution);
-            y = y;// + ((j+this->jitterValues[i+j])/this->sampleResolution);
+            x = x + ((i+this->jitterValues[i+j])/(double)this->sampleResolution);
+            y = y + ((j+this->jitterValues[i+j])/(double)this->sampleResolution);
             ray->setToPerspectiveRay(2, renderWidth, renderHeight, x, y);
             //ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
             cr->reset();
@@ -382,18 +385,23 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
                 //the currently shader model to determine pixel colour.
                 result += this->activeShader->getPixelColour(ray, cr, this->sceneManager);
                 //result += cr->subjectProperties->diffusionCoef;
+                goodSamples++;
             }
             else
             {
                 //qDebug() << "RayTracer: Miss!";
                 //We didn't hit anything in the scene! Use a background colour
                 //of hot pink/magenta to indicate this, making it obvious.
-                result += QVector3D(0.3,0.3,0.3);
             }
         }
     }
 
-    result /= this->sampleResolution * this->sampleResolution; //Total number of samples, easy opti.
+    if(goodSamples == 0)
+    {
+        result = QVector3D(0.5, 0.5, 0.5);
+    }
+    else
+        result /= goodSamples; //Total number of samples, easy opti.
 
     //qDebug() << "Shader Result: " << result << " for (" << x << "," << y << ")";
     return result;
