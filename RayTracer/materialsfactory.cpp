@@ -4,7 +4,7 @@
 MaterialsFactory::MaterialsFactory()
 {
     qDebug() << "MaterialsFactory: Creating Materials";
-    this->materials = new SceneObjectProperties*[GREY_LIGHT_FLAT+1];
+    this->materials = new SceneObjectProperties*[MAT_LAST+1];
     this->materials[DEFAULT] =
         new SceneObjectProperties(
             QVector3D(0.2,0.2,0.2), //AMBIENT
@@ -13,7 +13,13 @@ MaterialsFactory::MaterialsFactory()
             0); //SHININESS
 
         //LIGHT_WHITE
-    this->materials[LIGHT_WHITE] = new SceneObjectProperties(QVector3D(0.3, 0.3, 0.3)),
+    this->materials[LIGHT_WHITE] = new SceneObjectProperties(QVector3D(0.2, 0.2, 0.2)),
+    this->materials[LIGHT_WHITE_SCENE] = new SceneObjectProperties(QVector3D(0.1, 0.1, 0.1)),
+
+    /* For BlinnPhong
+    this->materials[LIGHT_WHITE] = new SceneObjectProperties(QVector3D(0.02, 0.02, 0.02)),
+    this->materials[LIGHT_WHITE_SCENE] = new SceneObjectProperties(QVector3D(0.05, 0.05, 0.05)),
+    */
 
     this->materials[LIGHT_RED] = new SceneObjectProperties(QVector3D(0.3, 0, 0)),
 
@@ -96,12 +102,22 @@ MaterialsFactory::MaterialsFactory()
         //BRONZE_POLISHED,
         //CHROME,
         //COPPER,
-        //COPPER_POLISHED,
-        //GOLD,
+    this->materials[COPPER_POLISHED] = new SceneObjectProperties(
+            QVector3D(0.2295, 0.08825, 0.0275), //AMBIENT
+            QVector3D(0.5508, 0.2118, 0.066), //DIFFUSE
+            QVector3D(0.580594, 0.223257, 0.0695701), //SPECULAR
+            51.2, 0.3); //SHININESS
+
+    //GOLD,
         //GOLD_POLISHED,
         //PEWTER,
         //SILVER,
-        //SILVER_POLISHED,
+     this->materials[SILVER_POLISHED] =new SceneObjectProperties(
+                QVector3D(0.23125, 0.23125, 0.23125), //AMBIENT
+                QVector3D(0.2775, 0.2775, 0.2775), //DIFFUSE
+                QVector3D(0.773911, 0.773911, 0.773911), //SPECULAR
+                89.6, 0.85), //SHININESS, MIRROR
+
         //EMERALD,
         //JADE,
         //OBSIDIAN,
@@ -110,5 +126,6 @@ MaterialsFactory::MaterialsFactory()
         //TURQUOISE,
         //PLASTIC_BLACK,
         //RUBBER_BLACK
+
     qDebug() << "MaterialsFactory: Finished making materials";
 }

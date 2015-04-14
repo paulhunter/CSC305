@@ -26,6 +26,7 @@ enum MaterialType
     DEFAULT,
 
 	LIGHT_WHITE,
+    LIGHT_WHITE_SCENE,
     LIGHT_RED,
     LIGHT_BLUE,
 
@@ -39,7 +40,7 @@ enum MaterialType
 	WHITE_FLAT,
 	BLACK_FLAT,
 	GREY_FLAT,
-	GREY_LIGHT_FLAT
+    GREY_LIGHT_FLAT,
 
 	/* Real Materials, to add later.
 	GLASS,
@@ -48,12 +49,16 @@ enum MaterialType
 	BRONZE_POLISHED,
 	CHROME,
 	COPPER,
+    */
 	COPPER_POLISHED,
+    /*
 	GOLD,
 	GOLD_POLISHED,
 	PEWTER,
 	SILVER,
-	SILVER_POLISHED,
+    */
+    SILVER_POLISHED,
+    /*
 	EMERALD,
 	JADE,
 	OBSIDIAN,
@@ -62,6 +67,7 @@ enum MaterialType
 	TURQUOISE,
 	PLASTIC_BLACK,
 	RUBBER_BLACK */
+    MAT_LAST
 };
 
 

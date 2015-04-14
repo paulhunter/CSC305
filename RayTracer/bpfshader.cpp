@@ -1,6 +1,6 @@
 #include "bpfshader.h"
 
-#define DEPTH_LIMIT 5
+#define DEPTH_LIMIT 10
 #ifndef EPSILON
 #define EPSILON 0.00001f
 #endif
@@ -80,7 +80,7 @@ QVector3D bpfs_cast_ray(Ray* ray, CastResult* cr, SceneManager* scene, int level
 
 
         //Specular Component.
-        specular = specular * material->specularCoef;
+        specular = specular * material->specularCoef * 0;
 
     }
 
@@ -88,7 +88,7 @@ QVector3D bpfs_cast_ray(Ray* ray, CastResult* cr, SceneManager* scene, int level
     QVector3D color;
     color = (ambient + diffusion + specular);
     //Add Mirror component if present
-    if(material->mirrorFactor > EPSILON && level > 0)
+    if(material->mirrorFactor > 0.5 && level > 0)
     {
         ray->set(sp, n);
         cr->reset();

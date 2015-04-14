@@ -18,6 +18,7 @@
 #include "sceneobjectfactory.h"
 #include "materialsfactory.h"
 #include "lambertshader.h"
+#include "bpfshader.h"
 
 #include "lightsource.h"
 #include <scenemanager.h>

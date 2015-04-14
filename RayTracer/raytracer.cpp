@@ -11,7 +11,7 @@
 #include "unistd.h"
 
 #define MAX_THREADS_P 16
-#define SAMPLE_SIZE 5
+#define SAMPLE_SIZE 1
 
 RayTracer::RayTracer()
 {
@@ -23,45 +23,46 @@ RayTracer::RayTracer()
     // //////////////////////////////////////////////////////////////////////
 	this->sceneManager = new SceneManager();
 
-    /*Shiny Big Sphere */
+    /* Little Blue Sphere */
     SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0,10,5), 2); //QVector3D(0, 5, -5), 2);
-    this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(MaterialsFactory::INDIGO_FLAT));
+    this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(MaterialsFactory::BLUE_FLAT));
 
-    /* Orange Back Sphere */
+    /* Big Mirror Sphere */
     SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 1, 0), 10);
-    this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(MaterialsFactory::ORANGE_FLAT));
+    this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(MaterialsFactory::SILVER_POLISHED));
 
-    /* Copper front sphere */ //Currently yellow
+    /* Copper sphere */ //Currently yellow
     SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(15, 3, 5), 1.0);
-    this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(MaterialsFactory::YELLOW_FLAT));
+    this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(MaterialsFactory::COPPER_POLISHED));
 
     /* Ground Plane */
     SceneObject* groundPlane = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::PLANE, QVector3D(0,0,0));
-    this->sceneManager->add_sceneObject(groundPlane, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
+    this->sceneManager->add_sceneObject(groundPlane, MaterialsFactory::getMaterial(MaterialsFactory::SILVER_POLISHED));
 
-    /* Red Back Wall */
+    /* Grey Back Wall */
     SceneObject* leftWall = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(-100, 0, 0), 90, 0, 0);
-    this->sceneManager->add_sceneObject(leftWall, MaterialsFactory::getMaterial(MaterialsFactory::RED_FLAT));
+    this->sceneManager->add_sceneObject(leftWall, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
 
     /* White Corner Scene Light */
-    SceneObject* sceneLight = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(-25, 50, 15));
-    this->sceneManager->add_lightSource(sceneLight, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
+    //SceneObject* sceneLight = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(-25, 50, 10));
+    //this->sceneManager->add_lightSource(sceneLight, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
 
-    SceneObject* sceneLight2 = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(25, 50, 15));
-    this->sceneManager->add_lightSource(sceneLight2, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
+    //SceneObject* sceneLight2 = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(25, 50, 10));
+    //this->sceneManager->add_lightSource(sceneLight2, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
 
-    SceneObject* sceneLight3 = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(0, 10, 50));
-    this->sceneManager->add_lightSource(sceneLight3, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
+    SceneObject* sceneLight3 = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 10, 50), 10);
+    this->sceneManager->add_lightSource(sceneLight3, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE_SCENE));
 
 
     // END OF SCENE CREATION
 
     this->activeShader = new LambertShader();
+    this->activeShader = new BlinnPhongReflectiveShader();
 
     this->sampleResolution = SAMPLE_SIZE;
-    for(int i = 0; i < this->sampleResolution*this->sampleResolution; i++)
+    for(int i = 0; i < this->sampleResolution*2; i++)
     {
-        this->jitterValues.push_back((double)std::rand()/RAND_MAX);
+        this->jitterValues.push_back(((double)std::rand())/RAND_MAX);
     }
 
     //Multi-Threading Infomation
@@ -78,7 +79,7 @@ RayTracer::RayTracer()
     this->dirtyFlags = 0x0000; 
     this->renderData = NULL;
     this->setWorkerCount(MAX_THREADS_P);
-    this->setRenderSize(600, 600);
+    this->setRenderSize(400, 400);
 
     this->workTokens = 0;
     
@@ -297,7 +298,7 @@ void RayTracer::render_worker()
     QVector3D colour;
     // TODO: CAMERA CONTROLS
     //Look from the 
-    Ray* ray = new Ray(QVector3D(40,10,40), (-QVector3D(40,10,40)).normalized());
+    Ray* ray = new Ray(QVector3D(40,10,40), (-QVector3D(40,4.5,40)).normalized());
     //Ray* ray = new Ray(QVector3D(0,5,15.95), QVector3D(0,-0.2,-1).normalized());
     CastResult* cr = new CastResult();
     unsigned char* ptr;
@@ -368,8 +369,8 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, int x, int y)
     {
         for(int j = 0; j < this->sampleResolution; j++)
         {
-            x = x + ((i+this->jitterValues[i+j])/this->sampleResolution);
-            y = y + ((j+this->jitterValues[i+j])/this->sampleResolution);
+            x = x;// + ((i+this->jitterValues[i+j])/this->sampleResolution);
+            y = y;// + ((j+this->jitterValues[i+j])/this->sampleResolution);
             ray->setToPerspectiveRay(2, renderWidth, renderHeight, x, y);
             //ray->setToOrthographicRay(20.0, renderWidth, renderHeight, x, y);
             cr->reset();
