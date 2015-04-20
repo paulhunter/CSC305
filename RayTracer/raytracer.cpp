@@ -403,7 +403,7 @@ QVector3D RayTracer::getPixel(Ray* ray, CastResult* cr, double x, double y)
             }
             else
             {
-                //qDebug() << "RayTracer: Miss!";
+                qDebug() << "RayTracer: Miss!";
                 //We didn't hit anything in the scene! Use a background colour
                 //of hot pink/magenta to indicate this, making it obvious.
             }

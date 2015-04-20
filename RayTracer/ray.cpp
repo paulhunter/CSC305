@@ -29,8 +29,12 @@ Ray::Ray(QVector3D eyePos, QVector3D direction)
 void Ray::setToOrthographicRay(double scale, double screenWidth, double screenHeight, 
 		double i, double j)
 {
-	double midu = ((-screenWidth/2.0) + (i + 0.5)) / screenWidth;
-    double midv = ((screenHeight/2.0) - (j - 0.5)) / screenHeight;
+	//double midu = ((-screenWidth/2.0) + (i + 0.5)) / screenWidth;
+    //double midv = ((screenHeight/2.0) - (j - 0.5)) / screenHeight;
+
+    double midu = ((-screenWidth/2.0) + i) / screenWidth;
+    double midv = ((screenHeight/2.0) - j) / screenHeight;
+    
 	this->origin = this->eyePos + (scale*midu * u) + (scale*midv * v);
     this->direction = -w; //Our direction vector becomes the length of the 
     //hypothetical lens from the sensor.
