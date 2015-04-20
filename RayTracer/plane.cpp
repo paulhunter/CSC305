@@ -29,6 +29,8 @@ double Plane::intersects(Ray *ray, QMatrix4x4 transform)
      QVector3D n = transform * QVector3D(0.0, 1, 0);
      QVector3D o = transform * QVector3D(0, 0, 0);
      n = (n-o).normalized();
+     ray->origin = ray->origin + o; //We have to offset the ray to get the
+                                    //right t value below.
 
      double t = QVector3D::dotProduct((o-ray->origin),n)/QVector3D::dotProduct(ray->direction,n);
 
