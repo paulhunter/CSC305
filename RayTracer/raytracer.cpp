@@ -24,34 +24,51 @@ RayTracer::RayTracer()
 	this->sceneManager = new SceneManager();
 
     /* Little Blue Sphere */
-    SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0,10,5), 2); //QVector3D(0, 5, -5), 2);
+    SceneObject* silverSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 1, -1), 2); //QVector3D(0, 5, -5), 2);
     this->sceneManager->add_sceneObject(silverSphere, MaterialsFactory::getMaterial(MaterialsFactory::BLUE_FLAT));
 
     /* Big Mirror Sphere */
-    SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 1, 0), 10);
+    SceneObject* orangeSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 1.25, -1.25), 4);
     this->sceneManager->add_sceneObject(orangeSphere, MaterialsFactory::getMaterial(MaterialsFactory::SILVER_POLISHED));
 
     /* Copper sphere */ //Currently yellow
-    SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(15, 3, 5), 1.0);
+    SceneObject* copperSphere = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(4, 3, -0.5), 2);
     this->sceneManager->add_sceneObject(copperSphere, MaterialsFactory::getMaterial(MaterialsFactory::COPPER_POLISHED));
 
     /* Ground Plane */
     SceneObject* groundPlane = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::PLANE, QVector3D(0,0,0));
     this->sceneManager->add_sceneObject(groundPlane, MaterialsFactory::getMaterial(MaterialsFactory::SILVER_POLISHED));
 
-    /* Grey Back Wall */
-    SceneObject* leftWall = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(-100, 0, 0), 90, 0, 0);
-    this->sceneManager->add_sceneObject(leftWall, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
+    /* Light Grey Back Wall */
+    SceneObject* backWall = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(0, 0, -10), -90, 0, 0);
+    this->sceneManager->add_sceneObject(backWall, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
+
+    /* Blue Left Wall */
+    SceneObject* rightWall = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(-10, 0, 0), 0, 0, 90);
+    this->sceneManager->add_sceneObject(rightWall, MaterialsFactory::getMaterial(MaterialsFactory::BLUE_FLAT));
+
+    /* Red Right Wall */
+    SceneObject* rightWall = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(10, 0, 0), 0, 0, -90);
+    this->sceneManager->add_sceneObject(rightWall, MaterialsFactory::getMaterial(MaterialsFactory::BLUE_FLAT));
+
+    /* Grey Ceiling */
+    SceneObject* ceiling = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(0, 10, 0), 0, 0, 180);
+    this->sceneManager->add_sceneObject(ceiling, MaterialsFactory::getMaterial(MaterialsFactory::GREY_FLAT));
+
+    /* Light Grey Behind Wall */
+    SceneObject* wallBehindCamera = SceneObjectFactory::getInstance().createSceneObject_wRot(PrimitiveShape::PLANE, QVector3D(0, 0, 20), 90, 0, 0);
+    this->sceneManager->add_sceneObject(wallBehindCamera, MaterialsFactory::getMaterial(MaterialsFactory::GREY_LIGHT_FLAT));
+
 
     /* White Corner Scene Light */
-    //SceneObject* sceneLight = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(-25, 50, 10));
-    //this->sceneManager->add_lightSource(sceneLight, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
+    SceneObject* sceneLight = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(-2, 2, -4), 5);
+    this->sceneManager->add_lightSource(sceneLight, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
 
     //SceneObject* sceneLight2 = SceneObjectFactory::getInstance().createSceneObject(PrimitiveShape::SPHERE, QVector3D(25, 50, 10));
     //this->sceneManager->add_lightSource(sceneLight2, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE));
 
-    SceneObject* sceneLight3 = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 10, 50), 10);
-    this->sceneManager->add_lightSource(sceneLight3, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE_SCENE));
+    //SceneObject* sceneLight3 = SceneObjectFactory::getInstance().createSceneObject_wScale(PrimitiveShape::SPHERE, QVector3D(0, 10, 50), 10);
+    //this->sceneManager->add_lightSource(sceneLight3, MaterialsFactory::getMaterial(MaterialsFactory::LIGHT_WHITE_SCENE));
 
 
     // END OF SCENE CREATION
@@ -295,7 +312,7 @@ void RayTracer::render_worker()
     QVector3D colour;
     // TODO: CAMERA CONTROLS
     //Look from the 
-    Ray* ray = new Ray(QVector3D(40,10,40), (-QVector3D(40,4.5,40)).normalized());
+    Ray* ray = new Ray(QVector3D(5,6,18), (-QVector3D(-5,-2,-38)).normalized());
     //Ray* ray = new Ray(QVector3D(0,5,15.95), QVector3D(0,-0.2,-1).normalized());
     CastResult* cr = new CastResult();
     unsigned char* ptr;

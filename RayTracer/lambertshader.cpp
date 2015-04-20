@@ -13,7 +13,7 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
     QVector3D sp = cast->surfacePoint;
     SceneObjectProperties* material = cast->subjectProperties;
 	/* Ambient Component - Dummy lighting value of 0.005 */
-    QVector3D ambient = 0.05 * material->ambientCoef;
+    QVector3D ambient = 0.15 * material->ambientCoef;
 
     QVector3D diffusion(0,0,0);  //The light coeffecient returned is RGB channeled.
     if(cast->subjectProperties->emission.length() > 0.00001)
@@ -28,7 +28,7 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
         {
             LightSource* light = (*it);
             //If in shadow, do not add its intensity.
-            ray->set(sp, light->getLightVector(cast->surfacePoint));
+            ray->set(sp, light->getLightVector(sp));
             cast->reset();
             if(scene->cast_ray_into_scene(ray, cast) && cast->subject != light->getObject())
             {
@@ -42,7 +42,7 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
             {
                 //Light hits the surface directly.
                 diffusion += light->getLightProperties()->emission
-                    * fmax(0, QVector3D::dotProduct(cast->surfaceNormal, light->getLightVector(cast->surfacePoint)));
+                    * fmax(0, QVector3D::dotProduct(n, light->getLightVector(sp)));
             }
             else
             {
