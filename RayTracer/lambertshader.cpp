@@ -13,16 +13,18 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
     QVector3D sp = cast->surfacePoint;
     SceneObjectProperties* material = cast->subjectProperties;
 	/* Ambient Component - Dummy lighting value of 0.005 */
-    QVector3D ambient = 0.15 * material->ambientCoef;
+    QVector3D ambient(0,0,0);
 
     QVector3D diffusion(0,0,0);  //The light coeffecient returned is RGB channeled.
+    QVector3D specular(0,0,0);
+    QVector3D halfway;
     if(cast->subjectProperties->emission.length() > 0.00001)
     {
         diffusion = cast->subjectProperties->emission;
     }
     else
     {
-        /* Diffusion Component */
+  
 
         for(std::vector<LightSource*>::iterator it = scene->lights.begin(); it != scene->lights.end(); ++it)
         {
@@ -43,6 +45,9 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
                 //Light hits the surface directly.
                 diffusion += light->getLightProperties()->emission
                     * fmax(0, QVector3D::dotProduct(n, light->getLightVector(sp)));
+                halfway = (light->getLightVector(sp) + (eye-sp)).normalized();
+                specular += light->getLightProperties()->emission
+                    * fmax(0, pow(QVector3D::dotProduct(n, h), material->shininess);
             }
             else
             {
@@ -52,13 +57,15 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
 
         //With the light hitting the surface calcated, muttiply by the surfaces diffusion
         //coeffecient to find out how much of it gets back to the camera.
-        diffusion = diffusion * material->diffusionCoef;
+        ambient    = 0.15 * material->ambientCoef;
+        diffusion *= 0.70 * material->diffusionCoef;
+        specular  *= 0.15 * material->specularCoef;
     }
 
 
     QVector3D color;
 	//Add the components together. 
-    color = ambient + diffusion;
+    color = ambient + diffusion; + specular;
     if(material->mirrorFactor > 0.1 && level > 0)
     {
         QVector3D mirrorComp;
@@ -76,9 +83,12 @@ QVector3D lam_getPixelColour(Ray* ray, CastResult* cast, SceneManager* scene, in
     }
 
     //Ensure they are not saturated beyond bounds.
-	color.setX(fmin(1, color.x()));
-	color.setY(fmin(1, color.y()));
-	color.setZ(fmin(1, color.z()));
+    if(color.length() > 1.75)
+    {
+        qDebug() << "ERROR: Shader Colour outside bounds!";
+        color(0,0,0);
+    }
+
     //qDebug() << "Lambert Shader Complete";
 	return color;
 }
